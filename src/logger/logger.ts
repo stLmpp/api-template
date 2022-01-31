@@ -1,10 +1,15 @@
 import { createLogger, format, LeveledLogMethod, Logger as WinstonLogger, transports } from 'winston';
-import { injector } from '../injector/injector';
+import { join } from 'path';
 
 const logTypes = ['error', 'warn', 'info', 'debug', 'http', 'verbose', 'silly'] as const;
 
+export interface LoggerOptions {
+  production: boolean;
+  path: string;
+}
+
 export class Logger {
-  constructor(private name: string) {
+  constructor(name: string, options: LoggerOptions) {
     const color = format.colorize({ colors: { service: 'yellow', name: 'magenta' } });
     const myFormat = format.combine(
       format.align(),
@@ -21,11 +26,11 @@ export class Logger {
       level: 'info',
       format: myFormat,
       transports: [
-        new transports.File({ filename: 'logging.log' }),
-        new transports.File({ filename: 'error-logging.log', level: 'error' }),
+        new transports.File({ filename: join(options.path, '/', 'combined.log') }),
+        new transports.File({ filename: join(options.path, '/', 'error.log'), level: 'error' }),
       ],
     });
-    if (process.env.NODE_ENV !== 'production') {
+    if (!options.production) {
       this._logger.add(
         new transports.Console({
           format: myFormat,
@@ -48,9 +53,7 @@ export class Logger {
   readonly verbose!: LeveledLogMethod;
   readonly silly!: LeveledLogMethod;
 
-  static create(name: string): Logger {
-    return new Logger(name);
+  static create(name: string, options: LoggerOptions): Logger {
+    return new Logger(name, options);
   }
 }
-
-injector.add(Logger, Logger.create(''));

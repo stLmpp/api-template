@@ -9,7 +9,6 @@ import { Controller } from './controller/decorator/controller.decorator';
 import { BaseEnvironment } from './environment/base-environment';
 import { EnvProp } from './environment/env-prop.decorator';
 import { Env } from './environment/env.decorator';
-import { Logger } from './logger/logger';
 
 @Env()
 export class Environment extends BaseEnvironment {
@@ -34,22 +33,18 @@ export class HelloUseCase extends BaseUseCase<any, { id: number; teste: any }> {
 export class AppController {
   constructor(private helloUseCase: HelloUseCase) {}
 
-  logger = Logger.create('Controller');
-
   @Get('/:id')
   async get(@Param('id') id: number, @Query('teste') teste: any): Promise<Result<any>> {
-    this.logger.error('teste');
     return this.helloUseCase.execute({ id, teste });
   }
 }
 
-const app = ApiFactory.create({ port: 3000 });
+const app = ApiFactory.create({ port: 3000, controllers: [AppController] });
 
 async function main(): Promise<void> {
-  await app.bootstrap().catch(console.error);
+  await app.listen();
 
-  const logger = Logger.create('Teste');
-
+  const logger = app.getDefaultLogger();
   logger.info('Some info here');
   logger.error('Some error here');
 }
