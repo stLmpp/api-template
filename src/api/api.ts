@@ -29,19 +29,23 @@ export class Api {
     this._prefix = this.options.prefix ?? 'api';
     this.name = this.options.name ?? 'API';
     this._app = express().use(express.json()).use(compression()).use(helmet());
-    this._loadConfig()._loadControllers()._app.use(errorMiddleware());
+    this._loadConfig();
+    this._logger = this.injector.get(LoggerFactory).create('Api');
+    this._loadControllers()._app.use(errorMiddleware());
   }
 
   private readonly _app: Application;
   private readonly _prefix: string;
+  private readonly _logger: Logger;
 
   readonly name: string;
 
   private _loadController(instance: any, metadata: ControllerMetadata): this {
     for (const [key, route] of metadata.routes) {
-      this._app[route.method](join('/', this._prefix, '/', metadata.path, '/', route.path), async (req, res, next) => {
+      const routePath = join('/', this._prefix, '/', metadata.path, '/', route.path);
+      this._app[route.method](routePath, async (req, res, next) => {
         try {
-          const result = await instance[key](...route.params.map(callback => callback(req)));
+          const result = await instance[key](...route.params.map(paramMetadata => paramMetadata.parser(req)));
           if (result instanceof Result) {
             res.send(result.toJSON());
           } else {
@@ -51,6 +55,7 @@ export class Api {
           next(error);
         }
       });
+      this._logger.info(`(${route.method.toUpperCase()}) ${routePath} loaded`);
     }
     return this;
   }
@@ -58,15 +63,16 @@ export class Api {
   private _loadControllers(): this {
     const entries = this.controllerMetadataStore.getEntries();
     for (const [controller, metadata] of entries) {
-      const instance = this.injector.resolve(controller);
+      this._logger.info(`${controller.name} loaded`);
+      const instance = this.injector.get(controller);
       this._loadController(instance, metadata);
     }
     return this;
   }
 
   private _loadConfig(): this {
-    const baseEnvironment = this.injector.resolve(BaseEnvironment);
-    this.injector.add(
+    const baseEnvironment = this.injector.get(BaseEnvironment);
+    this.injector.set(
       LoggerFactory,
       new LoggerFactory({ production: !baseEnvironment.isDev, path: this.options.logger?.path ?? '/' })
     );
@@ -74,12 +80,14 @@ export class Api {
   }
 
   getDefaultLogger(): Logger {
-    const loggerFactory = this.injector.resolve(LoggerFactory);
+    const loggerFactory = this.injector.get(LoggerFactory);
     return loggerFactory.create(this.name);
   }
 
   async listen(): Promise<this> {
-    await this._app.listen(this.options.port, this.options.host ?? '127.0.0.1');
+    const host = this.options.host ?? '127.0.0.1';
+    await this._app.listen(this.options.port, host);
+    this._logger.info(`Listening on ${host}:${this.options.port}`);
     return this;
   }
 }

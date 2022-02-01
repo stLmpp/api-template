@@ -1,5 +1,6 @@
 import { Class } from 'type-fest';
 import { RouteMetadata } from './route.metadata';
+import { ParamMetadata } from './param.metadata';
 
 export class ControllerMetadata {
   constructor(path?: string) {
@@ -25,6 +26,19 @@ export class ControllerMetadataStore {
       const metadata = controllerMetadata.routes.get(route) ?? new RouteMetadata();
       controllerMetadata.routes.set(route, update(metadata));
       return controllerMetadata;
+    });
+  }
+
+  upsertParam(
+    target: any,
+    route: string,
+    parameterIndex: number,
+    update: (metadata: ParamMetadata) => ParamMetadata
+  ): this {
+    return this.upsertRoute(target, route, routeMetadata => {
+      const metadata = routeMetadata.params[parameterIndex] ?? new ParamMetadata();
+      routeMetadata.params[parameterIndex] = update(metadata);
+      return routeMetadata;
     });
   }
 

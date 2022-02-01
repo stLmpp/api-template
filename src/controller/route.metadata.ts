@@ -1,5 +1,5 @@
 import { HTTPMethod } from '../enum/http-method.enum';
-import { Request } from 'express';
+import { ParamMetadata } from './param.metadata';
 
 export class RouteMetadata {
   constructor(method?: HTTPMethod, path?: string) {
@@ -10,5 +10,5 @@ export class RouteMetadata {
 
   path: string;
   method: HTTPMethod;
-  params: Array<(req: Request) => any>;
+  params: ParamMetadata[];
 }

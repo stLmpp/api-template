@@ -43,10 +43,6 @@ const app = ApiFactory.create({ port: 3000, controllers: [AppController] });
 
 async function main(): Promise<void> {
   await app.listen();
-
-  const logger = app.getDefaultLogger();
-  logger.info('Some info here');
-  logger.error('Some error here');
 }
 
 main().then();
