@@ -9,6 +9,13 @@ import { Controller } from './controller/decorator/controller.decorator';
 import { BaseEnvironment } from './environment/base-environment';
 import { EnvProp } from './environment/env-prop.decorator';
 import { Env } from './environment/env.decorator';
+import { Property } from './schema-metadata/property.decorator';
+import { controllerMetadataStore } from './controller/controller.metadata';
+
+export class Model {
+  @Property() id!: number;
+  @Property({ type: 'object' }) teste!: object;
+}
 
 @Env()
 export class Environment extends BaseEnvironment {
@@ -19,13 +26,9 @@ export class Environment extends BaseEnvironment {
 }
 
 @UseCase()
-export class HelloUseCase extends BaseUseCase<any, { id: number; teste: any }> {
-  constructor(private environment: Environment) {
-    super();
-  }
-
-  override execute({ id, teste }: { id: number; teste: any }): Result<any> {
-    return new Result({ id, teste, environment: { ...this.environment } });
+export class HelloUseCase extends BaseUseCase<Model, Model> {
+  override execute({ id, teste }: Model): Result<Model> {
+    return new Result({ id, teste });
   }
 }
 
@@ -34,7 +37,7 @@ export class AppController {
   constructor(private helloUseCase: HelloUseCase) {}
 
   @Get('/:id')
-  async get(@Param('id') id: number, @Query('teste') teste: any): Promise<Result<any>> {
+  async get(@Param('id') id: number, @Query('teste') teste: any): Promise<Result<Model>> {
     return this.helloUseCase.execute({ id, teste });
   }
 }
@@ -43,6 +46,8 @@ const app = ApiFactory.create({ port: 3000, controllers: [AppController] });
 
 async function main(): Promise<void> {
   await app.listen();
+  const entries = controllerMetadataStore.entries();
+  console.log(entries);
 }
 
 main().then();

@@ -1,17 +1,7 @@
-export class SwaggerSchemaPropertyMetadata {
-  constructor(public propertyKey: string) {}
+import { SwaggerSchemaMetadata } from './schema.metadata';
+import { SwaggerSchemaPropertyMetadata } from './schema-property.metadata';
 
-  type: any;
-  required = false;
-}
-
-export class SwaggerSchemaMetadata {
-  constructor(public target: any) {}
-
-  properties = new Map<string, SwaggerSchemaPropertyMetadata>();
-}
-
-export class SwaggerSchemasMetadata {
+export class SchemasMetadata {
   private readonly _schemas = new Map<any, SwaggerSchemaMetadata>();
 
   upsert(target: any, update: (metadata: SwaggerSchemaMetadata) => SwaggerSchemaMetadata): this {
@@ -31,6 +21,10 @@ export class SwaggerSchemasMetadata {
       return schemaMetadata;
     });
   }
+
+  entries(): [any, SwaggerSchemaMetadata][] {
+    return [...this._schemas.entries()];
+  }
 }
 
-export const swaggerSchemasMetadata = new SwaggerSchemasMetadata();
+export const swaggerSchemasMetadata = new SchemasMetadata();

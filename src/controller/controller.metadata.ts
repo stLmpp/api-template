@@ -42,7 +42,7 @@ export class ControllerMetadataStore {
     });
   }
 
-  getEntries(): [Class<any>, ControllerMetadata][] {
+  entries(): [Class<any>, ControllerMetadata][] {
     return [...this._metadata.entries()];
   }
 }

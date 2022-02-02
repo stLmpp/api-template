@@ -61,7 +61,7 @@ export class Api {
   }
 
   private _loadControllers(): this {
-    const entries = this.controllerMetadataStore.getEntries();
+    const entries = this.controllerMetadataStore.entries();
     for (const [controller, metadata] of entries) {
       this._logger.info(`${controller.name} loaded`);
       const instance = this.injector.get(controller);

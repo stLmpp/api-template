@@ -1,14 +1,14 @@
-import { swaggerSchemasMetadata } from '../swagger-schemas.metadata';
-import { ReflectMetadataTypes } from '../../utils/reflect';
+import { swaggerSchemasMetadata } from './schemas.metadata';
+import { ReflectMetadataTypes } from '../utils/reflect';
+import { OpenAPIV3 } from 'openapi-types';
 
 export interface ApiPropertyOptions {
-  type?: any;
+  type?: OpenAPIV3.NonArraySchemaObjectType | OpenAPIV3.ArraySchemaObjectType;
   required?: boolean;
+  // TODO add validations here
 }
 
-// TODO maybe use this as a global metadata storage to use in future things (like mapper)
-
-export function ApiProperty(options?: ApiPropertyOptions): PropertyDecorator {
+export function Property(options?: ApiPropertyOptions): PropertyDecorator {
   return (target, propertyKey) => {
     swaggerSchemasMetadata.upsertProperty(target.constructor, propertyKey.toString(), metadata => {
       metadata.type = options?.type ?? Reflect.getMetadata(ReflectMetadataTypes.designType, target, propertyKey);

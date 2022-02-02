@@ -11,4 +11,5 @@ export class RouteMetadata {
   path: string;
   method: HTTPMethod;
   params: ParamMetadata[];
+  returnType: any;
 }
