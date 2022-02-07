@@ -27,7 +27,7 @@
   "dependencies": {
     "class-transformer": "~0.5.1",
     "compression": "~1.7.4",
-    "dotenv": "~15.0.0",
+    "dotenv": "~16.0.0",
     "express": "~4.17.2",
     "helmet": "~5.0.1",
     "http-status-codes": "~2.2.0",
