@@ -1,0 +1,1 @@
+export type I18nKey = 'INTERNAL_ERROR' | 'ERROR_WITH_PARAM';

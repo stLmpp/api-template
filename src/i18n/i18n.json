@@ -1,0 +1,10 @@
+{
+  "INTERNAL_ERROR": {
+    "pt-BR": "Erro interno",
+    "en-US": "Internal error"
+  },
+  "ERROR_WITH_PARAM": {
+    "pt-BR": "Erro {error}",
+    "en-US": "Error {error}"
+  }
+}
