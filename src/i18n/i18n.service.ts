@@ -1,13 +1,12 @@
-import { I18nKey } from './i18n-key.type';
+import { I18nKey } from './i18n-key.enum';
 import i18nMessages from './i18n-messages';
-import { I18nLanguage } from './i18n-language.type';
 import { ApplicationError } from '../error/application-error';
 import { StatusCodes } from 'http-status-codes';
 import { injector } from '../injector/injector';
+import { getI18nContext } from './i18n-async-hook';
+import { I18nLanguage } from './i18n-language.enum';
 
 export class I18nService {
-  private _language = 'en-US';
-
   get(key: I18nKey, params?: Record<string, string>): string {
     const messageObject = i18nMessages[key];
     if (!messageObject) {
@@ -17,13 +16,17 @@ export class I18nService {
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       });
     }
-    let message = messageObject[this._language];
+    let language = getI18nContext();
+    if (!language) {
+      language = Object.values(I18nLanguage)[0];
+    }
+    let message = messageObject[language];
     if (!message) {
-      throw new ApplicationError({
-        error: `Message with key "${key}" and language "${this._language}" not found`,
-        message: `Message with key "${key}" and language "${this._language}" not found`,
-        statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
-      });
+      for (const i18nLanguage of Object.values(I18nLanguage)) {
+        if (messageObject[i18nLanguage]) {
+          message = messageObject[i18nLanguage];
+        }
+      }
     }
     if (params) {
       for (const [param, paramValue] of Object.entries(params)) {
@@ -31,11 +34,6 @@ export class I18nService {
       }
     }
     return message;
-  }
-
-  setLanguage(language: I18nLanguage): void {
-    // TODO add middleware and async_hook to set the language of the i18nService (maybe get the language via async_hook, Idk)
-    this._language = language;
   }
 }
 

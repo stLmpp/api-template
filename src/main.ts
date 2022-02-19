@@ -13,6 +13,7 @@ import { Property } from './schema-metadata/property.decorator';
 import { controllerMetadataStore } from './controller/controller.metadata';
 import { generateI18n } from './i18n/generate-i18n';
 import { i18nService } from './i18n/i18n.service';
+import { I18nKey } from './i18n/i18n-key.enum';
 
 export class Model {
   @Property() id!: number;
@@ -30,7 +31,10 @@ export class Environment extends BaseEnvironment {
 @UseCase()
 export class HelloUseCase extends BaseUseCase<Model, Model> {
   override execute({ id, teste }: Model): Result<Model> {
-    return new Result({ id, teste });
+    return new Result({ id, teste }).setMeta({
+      message1: i18nService.get(I18nKey.internalError),
+      message2: i18nService.get(I18nKey.errorWithParam, { error: 'custom' }),
+    });
   }
 }
 
@@ -50,10 +54,10 @@ async function main(): Promise<void> {
   await app.listen();
   const entries = controllerMetadataStore.entries();
   await generateI18n();
-  console.log({
-    INTERNAL_ERROR: i18nService.get('INTERNAL_ERROR'),
-    ERROR_WITH_PARAM: i18nService.get('ERROR_WITH_PARAM', { error: 'custom errors, Idk' }),
-  });
+  // console.log({
+  //   INTERNAL_ERROR: i18nService.get('INTERNAL_ERROR'),
+  //   ERROR_WITH_PARAM: i18nService.get('ERROR_WITH_PARAM', { error: 'custom errors, Idk' }),
+  // });
   console.log(entries);
 }
 

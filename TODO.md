@@ -1,9 +1,10 @@
-- Swagger
-- Swagger validation
-- Body and Params validation
-- Mapper
-- i18n (messages stored in json/database and type generation for typescript autocompletion)
-- Improve errorMiddleware
-- Improve logger with database support
-- Unit testing (probably jest)
-- Database support (probably MikroORM)
+- [ ] Swagger
+- [ ] Swagger validation
+- [ ] Body and Params validation
+- [ ] Mapper
+- [x] i18n
+- [ ] i18n database support
+- [ ] Improve errorMiddleware
+- [ ] Improve logger with database support
+- [ ] Unit testing (probably jest)
+- [ ] Database support (probably MikroORM)

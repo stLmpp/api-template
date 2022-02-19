@@ -10,6 +10,9 @@ import { Class } from 'type-fest';
 import { LoggerFactory, LoggerFactoryOptions } from '../logger/logger.factory';
 import { BaseEnvironment } from '../environment/base-environment';
 import { Logger } from '../logger/logger';
+import { I18nOptions } from '../i18n/i18n-options';
+import { i18nMiddleware } from '../i18n/i18n-middleware';
+import { I18nLanguage } from '../i18n/i18n-language.enum';
 
 export interface ApiOptions {
   name?: string;
@@ -18,6 +21,7 @@ export interface ApiOptions {
   host?: string;
   controllers: Class<any>[];
   logger?: Partial<Omit<LoggerFactoryOptions, 'production'>>;
+  i18nOptions?: I18nOptions;
 }
 
 export class Api {
@@ -28,7 +32,13 @@ export class Api {
   ) {
     this._prefix = this.options.prefix ?? 'api';
     this.name = this.options.name ?? 'API';
-    this._app = express().use(express.json()).use(compression()).use(helmet());
+    this._app = express()
+      .use(express.json())
+      .use(compression())
+      .use(helmet())
+      .use(
+        i18nMiddleware({ defaultLanguage: this.options.i18nOptions?.defaultLanguage ?? Object.values(I18nLanguage)[0] })
+      );
     this._loadConfig();
     this._logger = this.injector.get(LoggerFactory).create('Api');
     this._loadControllers()._app.use(errorMiddleware());
