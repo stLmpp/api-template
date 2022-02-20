@@ -1,3 +1,10 @@
+import { StatusCodes } from 'http-status-codes';
+
+export interface RouteDecoratorOptions {
+  path?: string;
+  httpCode?: StatusCodes;
+}
+
 export interface RouteDecoratorType {
-  (path?: string): MethodDecorator;
+  (options?: RouteDecoratorOptions): MethodDecorator;
 }

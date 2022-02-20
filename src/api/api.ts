@@ -67,9 +67,9 @@ export class Api {
         try {
           const result = await instance[key](...route.params.map(paramMetadata => paramMetadata.parser(req)));
           if (result instanceof Result) {
-            res.send(result.toJSON());
+            res.status(route.httpCode).send(result.toJSON());
           } else {
-            res.send(result);
+            res.status(route.httpCode).send(result);
           }
         } catch (error) {
           next(error);

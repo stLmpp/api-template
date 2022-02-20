@@ -13,6 +13,8 @@ import { Property } from './schema-metadata/property.decorator';
 import { controllerMetadataStore } from './controller/controller.metadata';
 import { i18nService } from './i18n/i18n.service';
 import { I18nKey } from './i18n/i18n-key.enum';
+import { Injectable } from './injector/injectable.decorator';
+import { StatusCodes } from 'http-status-codes';
 
 export class Model {
   @Property() id!: number;
@@ -27,14 +29,28 @@ export class Environment extends BaseEnvironment {
   @EnvProp({ parser: JSON.parse }) metadata!: Record<string, string>;
 }
 
+@Injectable()
+export class HelloService {
+  async get(data: Model): Promise<Model> {
+    const model = new Model();
+    model.id = data.id;
+    model.teste = data.teste;
+    return model;
+  }
+}
+
 @UseCase()
 export class HelloUseCase extends BaseUseCase<Model, Model> {
-  override execute({ id, teste }: Model): Result<Model> {
-    return new Result({ id, teste }).setMeta({
+  constructor(private readonly helloService: HelloService) {
+    super();
+  }
+
+  override async execute({ id, teste }: Model): Promise<Result<Model>> {
+    const data = await this.helloService.get({ teste, id });
+    return new Result(data).setMeta({
       message1: i18nService.get(I18nKey.internalError),
       message2: i18nService.get(I18nKey.errorWithParam, { error: 'custom' }),
       message3: i18nService.get(I18nKey.otherError),
-      message4: i18nService.get('NOT EXISTS' as any),
     });
   }
 }
@@ -43,7 +59,7 @@ export class HelloUseCase extends BaseUseCase<Model, Model> {
 export class AppController {
   constructor(private helloUseCase: HelloUseCase) {}
 
-  @Get('/:id')
+  @Get({ path: '/:id', httpCode: StatusCodes.ACCEPTED })
   async get(@Param('id') id: number, @Query('teste') teste: any): Promise<Result<Model>> {
     return this.helloUseCase.execute({ id, teste });
   }
