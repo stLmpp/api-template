@@ -23,8 +23,8 @@ export class Model {
 export class Environment extends BaseEnvironment {
   @EnvProp() timeout!: number;
   @EnvProp() flag!: boolean;
-  @EnvProp({ converter: (value: string) => value.split(',').map(Number) }) array!: number[];
-  @EnvProp({ converter: JSON.parse }) metadata!: Record<string, string>;
+  @EnvProp({ parser: (value: string) => value.split(',').map(Number) }) array!: number[];
+  @EnvProp({ parser: JSON.parse }) metadata!: Record<string, string>;
 }
 
 @UseCase()

@@ -6,7 +6,7 @@ import { snakeCase } from 'snake-case';
 export interface EnvPropertyOptions {
   required?: boolean;
   name?: string;
-  converter?: (value: any) => any;
+  parser?: (value: any) => any;
 }
 
 const defaultConverterMap = new Map<any, (value: any) => any>([
@@ -19,7 +19,7 @@ export function EnvProp(options?: EnvPropertyOptions): PropertyDecorator {
     const propertyKey = _propertyKey.toString();
     const name = snakeCase(options?.name ?? propertyKey).toUpperCase();
     const converter =
-      options?.converter ??
+      options?.parser ??
       defaultConverterMap.get(Reflect.getMetadata(ReflectMetadataTypes.designType, target, _propertyKey));
     environmentMetadata.add(
       propertyKey,
