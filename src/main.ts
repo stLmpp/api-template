@@ -33,6 +33,8 @@ export class HelloUseCase extends BaseUseCase<Model, Model> {
     return new Result({ id, teste }).setMeta({
       message1: i18nService.get(I18nKey.internalError),
       message2: i18nService.get(I18nKey.errorWithParam, { error: 'custom' }),
+      message3: i18nService.get(I18nKey.otherError),
+      message4: i18nService.get('NOT EXISTS' as any),
     });
   }
 }

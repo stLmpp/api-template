@@ -11,8 +11,7 @@ export class I18nService {
     const messageObject = i18nMessages[key];
     if (!messageObject) {
       throw new ApplicationError({
-        error: `Message with key "${key}" not found`,
-        message: `Message with key "${key}" not found`,
+        error: `[i18n] Message with key "${key}" not found`,
         statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       });
     }
