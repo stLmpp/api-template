@@ -11,7 +11,6 @@ import { EnvProp } from './environment/env-prop.decorator';
 import { Env } from './environment/env.decorator';
 import { Property } from './schema-metadata/property.decorator';
 import { controllerMetadataStore } from './controller/controller.metadata';
-import { generateI18n } from './i18n/generate-i18n';
 import { i18nService } from './i18n/i18n.service';
 import { I18nKey } from './i18n/i18n-key.enum';
 
@@ -48,12 +47,10 @@ export class AppController {
   }
 }
 
-const app = ApiFactory.create({ port: 3000, controllers: [AppController] });
-
 async function main(): Promise<void> {
+  const app = await ApiFactory.create({ port: 3000, controllers: [AppController] });
   await app.listen();
   const entries = controllerMetadataStore.entries();
-  await generateI18n();
   // console.log({
   //   INTERNAL_ERROR: i18nService.get('INTERNAL_ERROR'),
   //   ERROR_WITH_PARAM: i18nService.get('ERROR_WITH_PARAM', { error: 'custom errors, Idk' }),
@@ -61,4 +58,4 @@ async function main(): Promise<void> {
   console.log(entries);
 }
 
-main().then();
+main().then().catch(console.error);

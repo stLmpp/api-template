@@ -1,6 +1,9 @@
-import { format, resolveConfig } from 'prettier';
+import { BuiltInParserName, CustomParser, format, LiteralUnion, resolveConfig } from 'prettier';
 
-export async function applyPrettier(file: string): Promise<string> {
+export async function applyPrettier(
+  file: string,
+  parser: LiteralUnion<BuiltInParserName> | CustomParser = 'typescript'
+): Promise<string> {
   const prettierrc = await resolveConfig(process.cwd());
-  return format(file, { ...prettierrc, parser: 'typescript' });
+  return format(file, { ...prettierrc, parser });
 }

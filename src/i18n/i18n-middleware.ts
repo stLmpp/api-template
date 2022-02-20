@@ -4,7 +4,7 @@ import { createI18nContext } from './i18n-async-hook';
 import camelcase from 'camelcase';
 
 export interface I18NMiddlewareOptions {
-  defaultLanguage: I18nLanguage;
+  defaultLanguage: I18nLanguage | undefined;
 }
 
 function parseAcceptLanguageHeader(header: string): I18nLanguage | null {
@@ -17,11 +17,9 @@ function parseAcceptLanguageHeader(header: string): I18nLanguage | null {
 
 export function i18nMiddleware(options: I18NMiddlewareOptions): RequestHandler {
   return (req, res, next) => {
+    const defaultLanguage = options.defaultLanguage ?? ('en-US' as I18nLanguage);
     const header = req.headers['accept-language'];
-    const language =
-      !header || header === '*'
-        ? options.defaultLanguage
-        : parseAcceptLanguageHeader(header) ?? options.defaultLanguage;
+    const language = !header || header === '*' ? defaultLanguage : parseAcceptLanguageHeader(header) ?? defaultLanguage;
     createI18nContext(language);
     next();
   };

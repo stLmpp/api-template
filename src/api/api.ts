@@ -12,7 +12,11 @@ import { BaseEnvironment } from '../environment/base-environment';
 import { Logger } from '../logger/logger';
 import { I18nOptions } from '../i18n/i18n-options';
 import { i18nMiddleware } from '../i18n/i18n-middleware';
-import { I18nLanguage } from '../i18n/i18n-language.enum';
+import { ApiCachedConfiguration } from './api-cached-configuration';
+import { readFile, writeFile, mkdir } from 'fs/promises';
+import { generateI18n } from '../i18n/generate-i18n';
+import { pathExists } from '../utils/path-exists';
+import { applyPrettier } from '../prettier/apply-prettier';
 
 export interface ApiOptions {
   name?: string;
@@ -21,7 +25,7 @@ export interface ApiOptions {
   host?: string;
   controllers: Class<any>[];
   logger?: Partial<Omit<LoggerFactoryOptions, 'production'>>;
-  i18nOptions?: I18nOptions;
+  i18nOptions?: Partial<I18nOptions>;
 }
 
 export class Api {
@@ -30,20 +34,24 @@ export class Api {
     private readonly controllerMetadataStore: ControllerMetadataStore,
     private readonly options: ApiOptions
   ) {
+    this._i18nOptions = {
+      path: this.options.i18nOptions?.path ?? 'src/i18n',
+      filename: 'i18n.json',
+      defaultLanguage: this.options.i18nOptions?.defaultLanguage,
+    };
     this._prefix = this.options.prefix ?? 'api';
     this.name = this.options.name ?? 'API';
     this._app = express()
       .use(express.json())
       .use(compression())
       .use(helmet())
-      .use(
-        i18nMiddleware({ defaultLanguage: this.options.i18nOptions?.defaultLanguage ?? Object.values(I18nLanguage)[0] })
-      );
+      .use(i18nMiddleware({ defaultLanguage: this._i18nOptions.defaultLanguage }));
     this._loadConfig();
     this._logger = this.injector.get(LoggerFactory).create('Api');
-    this._loadControllers()._app.use(errorMiddleware());
   }
 
+  private _initialized = false;
+  private readonly _i18nOptions: I18nOptions;
   private readonly _app: Application;
   private readonly _prefix: string;
   private readonly _logger: Logger;
@@ -89,9 +97,66 @@ export class Api {
     return this;
   }
 
+  private async _getOrCreateCachedConfiguration(): Promise<ApiCachedConfiguration> {
+    const pathFolder = join(process.cwd(), '.api');
+    const path = join(pathFolder, 'cached-configuration.json');
+    if (await pathExists(path)) {
+      const file = await readFile(join(process.cwd(), '.api/cached-configuration.json'));
+      return JSON.parse(file.toString());
+    }
+    if (!(await pathExists(pathFolder))) {
+      await mkdir(pathFolder);
+    }
+    const configuration: ApiCachedConfiguration = {};
+    await writeFile(join(process.cwd(), '.api/cached-configuration.json'), JSON.stringify(configuration));
+    return configuration;
+  }
+
+  private async _upsertCachedConfiguration(
+    update: (configuration: ApiCachedConfiguration) => ApiCachedConfiguration
+  ): Promise<this> {
+    const configuration = await this._getOrCreateCachedConfiguration();
+    await writeFile(
+      join(process.cwd(), '.api/cached-configuration.json'),
+      await applyPrettier(JSON.stringify(update(configuration)), 'json')
+    );
+    return this;
+  }
+
+  private async _checkI18n(): Promise<this> {
+    const [configuration, i18nJson] = await Promise.all([
+      this._getOrCreateCachedConfiguration(),
+      readFile(join(process.cwd(), this._i18nOptions.path, this._i18nOptions.filename)).then(buffer =>
+        buffer.toString()
+      ),
+    ]);
+    const i18nJsonExists = !!configuration.i18n?.json;
+    const i18nJsonHasChanged = configuration.i18n?.json && configuration.i18n.json !== i18nJson;
+    if (!i18nJsonExists || i18nJsonHasChanged) {
+      if (!i18nJsonExists) {
+        this._logger.info('Generating i18n files');
+      }
+      if (i18nJsonHasChanged) {
+        this._logger.info('i18n file changed. Re-generating i18n files');
+      }
+      await this._upsertCachedConfiguration(_configuration => ({ ..._configuration, i18n: { json: i18nJson } }));
+      await generateI18n(this._i18nOptions);
+    }
+    return this;
+  }
+
   getDefaultLogger(): Logger {
     const loggerFactory = this.injector.get(LoggerFactory);
     return loggerFactory.create(this.name);
+  }
+
+  async init(): Promise<this> {
+    if (this._initialized) {
+      return this;
+    }
+    await this._checkI18n();
+    this._loadControllers()._app.use(errorMiddleware());
+    return this;
   }
 
   async listen(): Promise<this> {

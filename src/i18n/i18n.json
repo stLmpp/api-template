@@ -6,5 +6,9 @@
   "ERROR_WITH_PARAM": {
     "pt-BR": "Erro {error}",
     "en-US": "Error {error}"
+  },
+  "OTHER_ERROR": {
+    "pt-BR": "outro erro",
+    "en-US": "other error"
   }
 }
