@@ -46,6 +46,7 @@ export class Api {
       .use(compression())
       .use(helmet())
       .use(i18nMiddleware({ defaultLanguage: this._i18nOptions.defaultLanguage }));
+    this._baseEnvironment = this.injector.get(BaseEnvironment);
     this._loadConfig();
     this._logger = this.injector.get(LoggerFactory).create('Api');
   }
@@ -55,6 +56,7 @@ export class Api {
   private readonly _app: Application;
   private readonly _prefix: string;
   private readonly _logger: Logger;
+  private readonly _baseEnvironment: BaseEnvironment;
 
   readonly name: string;
 
@@ -89,10 +91,9 @@ export class Api {
   }
 
   private _loadConfig(): this {
-    const baseEnvironment = this.injector.get(BaseEnvironment);
     this.injector.set(
       LoggerFactory,
-      new LoggerFactory({ production: !baseEnvironment.isDev, path: this.options.logger?.path ?? '/' })
+      new LoggerFactory({ production: !this._baseEnvironment.isDev, path: this.options.logger?.path ?? '/' })
     );
     return this;
   }
@@ -155,7 +156,11 @@ export class Api {
       return this;
     }
     await this._checkI18n();
-    this._loadControllers()._app.use(errorMiddleware());
+    this._loadControllers()._app.use(
+      errorMiddleware({
+        production: !this._baseEnvironment.isDev,
+      })
+    );
     return this;
   }
 
