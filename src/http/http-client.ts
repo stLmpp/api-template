@@ -5,6 +5,7 @@ import { Class } from 'type-fest';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
+import { HttpResponse } from './http-response';
 
 export type ResponseType = 'json' | 'arrayBuffer' | 'text';
 
@@ -19,7 +20,7 @@ export interface RequestOptions<T extends Record<any, any>> {
 
 @Injectable()
 export class HttpClient {
-  private async _base<T>(options: RequestOptions<T>): Promise<T> {
+  private async _base<T>(options: RequestOptions<T>): Promise<HttpResponse<T>> {
     const requestInit: RequestInit = {
       method: options.method,
       body: options.body ?? null,
@@ -37,6 +38,7 @@ export class HttpClient {
       const errors = await validate(responseDataTyped as any, {
         forbidUnknownValues: true,
         validationError: { target: false },
+        whitelist: true,
       });
       if (errors.length) {
         throw new HttpError({
@@ -46,26 +48,26 @@ export class HttpClient {
         });
       }
     }
-    return responseDataTyped;
+    return new HttpResponse({ data: responseDataTyped, statusCode: response.status });
   }
 
-  get<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url' | 'body'>): Promise<T> {
+  get<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url' | 'body'>): Promise<HttpResponse<T>> {
     return this._base({ ...options, url, method: HttpMethod.GET });
   }
 
-  delete<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<T> {
+  delete<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<HttpResponse<T>> {
     return this._base({ ...options, url, method: HttpMethod.DELETE });
   }
 
-  patch<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<T> {
+  patch<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<HttpResponse<T>> {
     return this._base({ ...options, url, method: HttpMethod.PATCH });
   }
 
-  post<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<T> {
+  post<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<HttpResponse<T>> {
     return this._base({ ...options, url, method: HttpMethod.POST });
   }
 
-  put<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<T> {
+  put<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url'>): Promise<HttpResponse<T>> {
     return this._base({ ...options, url, method: HttpMethod.PUT });
   }
 }
