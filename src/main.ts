@@ -16,7 +16,8 @@ import { I18nKey } from './i18n/i18n-key.enum';
 import { Injectable } from './injector/injectable.decorator';
 import { StatusCodes } from 'http-status-codes';
 import { HttpClient } from './http/http-client';
-import { IsDefined, IsNumber, IsString, Min } from 'class-validator';
+import { IsDefined, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class Model {
   @Property() id!: number;
@@ -66,11 +67,12 @@ class CepModel {
 
   @IsDefined()
   @IsNumber()
-  @Min(20)
+  @Transform(({ value }) => Number(value))
   ddd!: number;
 
   @IsDefined()
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   siafi!: number;
 }
 

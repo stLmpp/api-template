@@ -46,7 +46,7 @@ export class HttpClient {
         });
       }
     }
-    return responseData as T;
+    return responseDataTyped;
   }
 
   get<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url' | 'body'>): Promise<T> {
