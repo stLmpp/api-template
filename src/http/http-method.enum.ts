@@ -1,4 +1,4 @@
-export enum HTTPMethod {
+export enum HttpMethod {
   DELETE = 'delete',
   GET = 'get',
   PATCH = 'patch',

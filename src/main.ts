@@ -15,6 +15,8 @@ import { i18nService } from './i18n/i18n.service';
 import { I18nKey } from './i18n/i18n-key.enum';
 import { Injectable } from './injector/injectable.decorator';
 import { StatusCodes } from 'http-status-codes';
+import { HttpClient } from './http/http-client';
+import { IsDefined, IsNumber, IsString, Min } from 'class-validator';
 
 export class Model {
   @Property() id!: number;
@@ -29,12 +31,60 @@ export class Environment extends BaseEnvironment {
   @EnvProp({ parser: JSON.parse }) metadata!: Record<string, string>;
 }
 
+class CepModel {
+  @IsDefined()
+  @IsString()
+  cep!: string;
+
+  @IsDefined()
+  @IsString()
+  logradouro!: string;
+
+  @IsDefined()
+  @IsString()
+  complemento!: string;
+
+  @IsDefined()
+  @IsString()
+  bairro!: string;
+
+  @IsDefined()
+  @IsString()
+  localidade!: string;
+
+  @IsDefined()
+  @IsString()
+  uf!: string;
+
+  @IsDefined()
+  @IsString()
+  ibge!: string;
+
+  @IsDefined()
+  @IsString()
+  gia!: string;
+
+  @IsDefined()
+  @IsNumber()
+  @Min(20)
+  ddd!: number;
+
+  @IsDefined()
+  @IsNumber()
+  siafi!: number;
+}
+
 @Injectable()
 export class HelloService {
+  constructor(private httpClient: HttpClient) {}
+
   async get(data: Model): Promise<Model> {
     const model = new Model();
     model.id = data.id;
-    model.teste = data.teste;
+    model.teste = {
+      ...data.teste,
+      cep: await this.httpClient.get<CepModel>('https://viacep.com.br/ws/01001000/json/', { validate: CepModel }),
+    };
     return model;
   }
 }

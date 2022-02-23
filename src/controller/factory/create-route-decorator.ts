@@ -1,9 +1,9 @@
-import { HTTPMethod } from '../../enum/http-method.enum';
+import { HttpMethod } from '../../http/http-method.enum';
 import { controllerMetadataStore } from '../controller.metadata';
 import { RouteDecoratorType } from '../route-decorator.type';
 import { ReflectMetadataTypes } from '../../utils/reflect';
 
-export function createRouteDecorator(method: HTTPMethod): RouteDecoratorType {
+export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
   return options => (target, propertyKey) => {
     controllerMetadataStore.upsertRoute(target.constructor, propertyKey.toString(), metadata => {
       if (options?.path) {

@@ -1,17 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
+import { ErrorInterface } from './error.interface';
 
-export interface ApplicationErrorOptions {
-  statusCode: StatusCodes;
+export interface ApplicationErrorInterface extends ErrorInterface {
   error: string;
   message?: string | undefined;
   id?: string | number | undefined;
   code?: string | number | undefined;
   meta?: Record<string, unknown> | undefined;
-  stack?: string | undefined;
 }
 
-export class ApplicationError implements ApplicationErrorOptions {
-  constructor({ statusCode, error, message, code, id, meta, stack }: ApplicationErrorOptions) {
+export class ApplicationError implements ApplicationErrorInterface {
+  constructor({ statusCode, error, message, code, id, meta, stack }: ApplicationErrorInterface) {
     this.statusCode = statusCode;
     this.error = error;
     this.message = message;
@@ -29,7 +28,7 @@ export class ApplicationError implements ApplicationErrorOptions {
   readonly meta: Record<string, unknown> | undefined;
   readonly stack: string | undefined;
 
-  toJSON(): Omit<ApplicationErrorOptions, 'statusCode'> {
+  toJSON(): Omit<ApplicationErrorInterface, 'statusCode'> {
     const { statusCode, ...error } = this;
     return error;
   }
