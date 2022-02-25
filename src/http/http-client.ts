@@ -2,10 +2,9 @@ import { Injectable } from '../injector/injectable.decorator';
 import { HttpMethod } from './http-method.enum';
 import { HttpError } from './http-error';
 import { Class } from 'type-fest';
-import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
 import { StatusCodes } from 'http-status-codes';
 import { HttpResponse } from './http-response';
+import { ValidationService } from '../validation/validation.service';
 
 export type ResponseType = 'json' | 'arrayBuffer' | 'text';
 
@@ -20,6 +19,8 @@ export interface RequestOptions<T extends Record<any, any>> {
 
 @Injectable()
 export class HttpClient {
+  constructor(private validationService: ValidationService) {}
+
   private async _base<T>(options: RequestOptions<T>): Promise<HttpResponse<T>> {
     const requestInit: RequestInit = {
       method: options.method,
@@ -34,12 +35,7 @@ export class HttpClient {
     const responseData = await response[responseType]();
     let responseDataTyped: T = responseData;
     if (responseType === 'json' && options.validate) {
-      responseDataTyped = plainToClass(options.validate, responseData);
-      const errors = await validate(responseDataTyped as any, {
-        forbidUnknownValues: true,
-        validationError: { target: false },
-        whitelist: true,
-      });
+      const [instance, errors] = await this.validationService.validate(options.validate, responseData);
       if (errors.length) {
         throw new HttpError({
           statusCode: StatusCodes.SERVICE_UNAVAILABLE,
@@ -47,6 +43,7 @@ export class HttpClient {
           // TODO add errors property after ApplicationError refactor
         });
       }
+      responseDataTyped = instance;
     }
     return new HttpResponse({ data: responseDataTyped, statusCode: response.status });
   }

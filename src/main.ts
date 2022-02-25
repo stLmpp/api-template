@@ -16,18 +16,7 @@ import { I18nKey } from './i18n/i18n-key.enum';
 import { Injectable } from './injector/injectable.decorator';
 import { StatusCodes } from 'http-status-codes';
 import { HttpClient } from './http/http-client';
-import {
-  IsArray,
-  IsDefined,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  MaxLength,
-  validate,
-  ValidateNested,
-  ValidationError,
-} from 'class-validator';
-import { plainToClass, Transform, Type } from 'class-transformer';
+import { IsDefined, IsNumber, IsString } from 'class-validator';
 
 export class Model {
   @Property() id!: number;
@@ -77,12 +66,10 @@ class CepModel {
 
   @IsDefined()
   @IsNumber()
-  @Transform(({ value }) => Number(value))
   ddd!: number;
 
   @IsDefined()
   @IsNumber()
-  @Transform(({ value }) => Number(value))
   siafi!: number;
 }
 
@@ -134,94 +121,7 @@ async function main(): Promise<void> {
   const app = await ApiFactory.create({ port: 3000, controllers: [AppController] });
   await app.listen();
   const entries = controllerMetadataStore.entries();
-  // console.log({
-  //   INTERNAL_ERROR: i18nService.get('INTERNAL_ERROR'),
-  //   ERROR_WITH_PARAM: i18nService.get('ERROR_WITH_PARAM', { error: 'custom errors, Idk' }),
-  // });
   console.log(entries);
-
-  const user = {
-    books: [
-      { id: '1', name: 'Book 1', te: 1 },
-      { id: 2, name: 'Book 2' },
-      { id: 3, name: 'Book 3' },
-    ],
-    id: '1',
-    settings: { dateFormat: 1 },
-  };
-
-  const userInstance = plainToClass(User, user);
-  const errors = await validate(userInstance, {
-    forbidUnknownValues: true,
-    enableDebugMessages: true,
-    whitelist: true,
-  });
-  console.log('user', userInstance);
-  console.log('errors', errors);
-  console.log('formatted', formatMessagesRecursive(errors));
 }
 
 main().then().catch(console.error);
-
-interface ValidationErrorAlt {
-  property: string;
-  message: string;
-}
-
-function formatMessageRecursive(message: ValidationError, parent?: string): ValidationErrorAlt[] {
-  const property = parent ? `${parent}.${message.property}` : message.property;
-  const messages: ValidationErrorAlt[] = [];
-  if (message.constraints) {
-    const values: ValidationErrorAlt[] = Object.values(message.constraints).map(error => ({
-      message: error.replace(message.property, property),
-      property,
-    }));
-    messages.push(...values);
-  }
-  if (message.children?.length) {
-    messages.push(...formatMessagesRecursive(message.children, property));
-  }
-  return messages;
-}
-
-function formatMessagesRecursive(messages: ValidationError[], parent?: string): ValidationErrorAlt[] {
-  return messages.reduce(
-    (acc, message) => [...acc, ...formatMessageRecursive(message, parent)],
-    [] as ValidationErrorAlt[]
-  );
-}
-
-class Book {
-  @IsDefined()
-  @IsNumber()
-  id!: number;
-
-  @IsDefined()
-  @IsString()
-  @MaxLength(250)
-  @IsNotEmpty()
-  name!: string;
-}
-
-class Settings {
-  @IsDefined()
-  @IsString()
-  dateFormat!: string;
-}
-
-class User {
-  @IsDefined()
-  @IsNumber()
-  id!: number;
-
-  @IsDefined()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => Book)
-  books!: Book[];
-
-  @IsDefined()
-  @ValidateNested()
-  @Type(() => Settings)
-  settings!: Settings;
-}
