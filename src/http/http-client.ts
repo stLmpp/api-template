@@ -37,10 +37,9 @@ export class HttpClient {
       throw new HttpError({ statusCode: response.status, message: response.statusText });
     }
     const responseType = options.responseType ?? 'json';
-    const responseData = await response[responseType]();
-    let responseDataTyped: T = responseData;
+    let data: T = await response[responseType]();
     if (responseType === 'json' && options.validate) {
-      const [instance, errors] = await this.validationService.validate(options.validate, responseData);
+      const [instance, errors] = await this.validationService.validate<T>(options.validate, data);
       if (errors.length) {
         this._logger.error('Errors', errors);
         throw new HttpError({
@@ -55,9 +54,10 @@ export class HttpClient {
           },
         });
       }
-      responseDataTyped = instance;
+      data = instance;
     }
-    return new HttpResponse({ data: responseDataTyped, statusCode: response.status });
+    this._logger.info('Response data', data);
+    return new HttpResponse({ data, statusCode: response.status });
   }
 
   get<T>(url: string, options?: Omit<RequestOptions<T>, 'method' | 'url' | 'body'>): Promise<HttpResponse<T>> {
