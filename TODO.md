@@ -9,4 +9,4 @@
 - [ ] Unit testing (probably jest)
 - [ ] Database support (probably MikroORM)
 - [ ] HttpClient
-- [ ] Refactor ApplicationError
+- [x] Refactor ApplicationError

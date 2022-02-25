@@ -11,12 +11,12 @@ import { EnvProp } from './environment/env-prop.decorator';
 import { Env } from './environment/env.decorator';
 import { Property } from './schema-metadata/property.decorator';
 import { controllerMetadataStore } from './controller/controller.metadata';
-import { i18nService } from './i18n/i18n.service';
 import { I18nKey } from './i18n/i18n-key.enum';
 import { Injectable } from './injector/injectable.decorator';
 import { StatusCodes } from 'http-status-codes';
 import { HttpClient } from './http/http-client';
 import { IsDefined, IsNumber, IsString } from 'class-validator';
+import { I18nService } from './i18n/i18n.service';
 
 export class Model {
   @Property() id!: number;
@@ -93,16 +93,16 @@ export class HelloService {
 
 @UseCase()
 export class HelloUseCase extends BaseUseCase<Model, Model> {
-  constructor(private readonly helloService: HelloService) {
+  constructor(private readonly helloService: HelloService, private readonly i18nService: I18nService) {
     super();
   }
 
   override async execute({ id, teste }: Model): Promise<Result<Model>> {
     const data = await this.helloService.get({ teste, id });
     return new Result(data).setMeta({
-      message1: i18nService.get(I18nKey.internalError),
-      message2: i18nService.get(I18nKey.errorWithParam, { error: 'custom' }),
-      message3: i18nService.get(I18nKey.otherError),
+      message1: this.i18nService.get(I18nKey.internalError),
+      message2: this.i18nService.get(I18nKey.errorWithParam, { error: 'custom' }),
+      message3: this.i18nService.get(I18nKey.otherError),
     });
   }
 }
