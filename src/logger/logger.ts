@@ -16,10 +16,11 @@ export class Logger {
       format.colorize(),
       format.label({ label: name }),
       format.timestamp({ format: 'DD/MM/YYYY HH:mm:ss' }),
-      format.printf(({ level, message, label, timestamp }) => {
+      format.json(),
+      format.printf(({ level, message, label, timestamp, ...params }) => {
         const apiTimestampColor = color.colorize('service', `[API] - ${timestamp}`);
         const labelColor = color.colorize('name', `[${label}]`);
-        return `${apiTimestampColor} \t${level} \t${labelColor} ${message}`;
+        return `${apiTimestampColor} \t${level} \t${labelColor} ${message} ${JSON.stringify(params)}`;
       })
     );
     this._logger = createLogger({
