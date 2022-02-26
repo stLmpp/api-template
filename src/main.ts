@@ -79,7 +79,7 @@ export class HelloService {
 
   async get(data: Model): Promise<Model> {
     const model = new Model();
-    const cepResponse = await this.httpClient.get<CepModel>('https://viacep.com.br/ws/01001000/json/123', {
+    const cepResponse = await this.httpClient.get<CepModel>('https://viacep.com.br/ws/010010001/json', {
       validate: CepModel,
     });
     model.id = data.id;

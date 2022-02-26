@@ -6,25 +6,23 @@ export interface BaseErrorParams {
   errors?: string[];
   code?: string;
   metadata?: Record<string, unknown>;
-  stack?: string;
 }
 
-export abstract class BaseError {
-  protected constructor({ statusCode, message, errors, code, metadata, stack }: BaseErrorParams) {
+export abstract class BaseError extends Error {
+  protected constructor({ statusCode, message, errors, code, metadata }: BaseErrorParams) {
+    super(message);
     this.statusCode = statusCode;
     this.message = message;
     this.errors = errors ?? [];
     this.code = code;
     this.metadata = metadata;
-    this.stack = stack;
+    this.name = 'BaseError';
   }
 
   readonly statusCode: StatusCodes;
-  readonly message: string;
   readonly errors: string[];
   readonly code: string | undefined;
   readonly metadata: Record<string, unknown> | undefined;
-  readonly stack: string | undefined;
 
   toJSON(): Record<string, unknown> {
     const { statusCode, ...error } = this;

@@ -5,5 +5,6 @@ export type ApplicationErrorParams = BaseErrorParams;
 export class ApplicationError extends BaseError {
   constructor(params: ApplicationErrorParams) {
     super(params);
+    this.name = 'ApplicationError';
   }
 }
