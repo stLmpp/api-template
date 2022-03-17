@@ -18,5 +18,6 @@
     "exactOptionalPropertyTypes": true,
     "noImplicitOverride": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["src/**/*.mock.ts"]
 }

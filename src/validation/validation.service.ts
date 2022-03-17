@@ -41,12 +41,12 @@ export class ValidationService {
 
   async validate<T extends Record<any, any>>(
     clazz: Class<T>,
-    object: Record<any, any> | T
-  ): Promise<[T, ValidationError[]]>;
-  async validate<T extends Record<any, any>>(
-    clazz: Class<T>,
     array: Array<Record<any, any> | T>
   ): Promise<[T[], ValidationError[]]>;
+  async validate<T extends Record<any, any>>(
+    clazz: Class<T>,
+    object: Record<any, any> | T
+  ): Promise<[T, ValidationError[]]>;
   async validate<T extends Record<any, any>>(
     clazz: Class<T>,
     objectOrArray: Record<any, any> | T | Array<Record<any, any> | T>
