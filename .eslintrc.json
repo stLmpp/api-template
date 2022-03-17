@@ -115,6 +115,10 @@
       {
         "selector": "function",
         "format": ["camelCase", "PascalCase"]
+      },
+      {
+        "selector": "objectLiteralProperty",
+        "format": null
       }
     ],
     "@typescript-eslint/member-ordering": [
