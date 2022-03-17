@@ -8,6 +8,6 @@
 - [ ] Improve logger with database support
 - [ ] Unit testing (probably jest)
 - [ ] Database support (probably MikroORM)
-- [ ] HttpClient
+- [x] HttpClient
 - [x] Refactor ApplicationError
 - [ ] Improve Logger to print objects and instances
