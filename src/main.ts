@@ -121,7 +121,7 @@ async function main(): Promise<void> {
   const app = await ApiFactory.create({ port: 3000, controllers: [AppController] });
   await app.listen();
   const entries = controllerMetadataStore.entries();
-  console.log(entries);
+  app.getDefaultLogger().info('Info', entries);
 }
 
 main().then().catch(console.error);

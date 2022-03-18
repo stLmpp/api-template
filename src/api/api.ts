@@ -7,13 +7,13 @@ import helmet from 'helmet';
 import { errorMiddleware } from '../error/error.middleware';
 import { join } from 'path';
 import { Class } from 'type-fest';
-import { LoggerFactory, LoggerFactoryOptions } from '../logger/logger.factory';
+import { LoggerFactory } from '../logger/logger.factory';
 import { BaseEnvironment } from '../environment/base-environment';
 import { Logger } from '../logger/logger';
 import { I18nOptions } from '../i18n/i18n-options';
 import { i18nMiddleware } from '../i18n/i18n-middleware';
 import { ApiCachedConfiguration } from './api-cached-configuration';
-import { readFile, writeFile, mkdir } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 import { generateI18n } from '../i18n/generate-i18n';
 import { pathExists } from '../utils/path-exists';
 import { applyPrettier } from '../prettier/apply-prettier';
@@ -24,7 +24,6 @@ export interface ApiOptions {
   port: number;
   host?: string;
   controllers: Class<any>[];
-  logger?: Partial<Omit<LoggerFactoryOptions, 'production'>>;
   i18nOptions?: Partial<I18nOptions>;
 }
 
@@ -91,10 +90,7 @@ export class Api {
   }
 
   private _loadConfig(): this {
-    this.injector.set(
-      LoggerFactory,
-      new LoggerFactory({ production: !this._baseEnvironment.isDev, path: this.options.logger?.path ?? '/' })
-    );
+    this.injector.set(LoggerFactory, new LoggerFactory());
     return this;
   }
 

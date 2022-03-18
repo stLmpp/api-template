@@ -1,60 +1,54 @@
-import { createLogger, format, LeveledLogMethod, Logger as WinstonLogger, transports } from 'winston';
-import { join } from 'path';
+import { isObject } from 'st-utils';
+import { format } from 'date-fns';
 
-const logTypes = ['error', 'warn', 'info', 'debug', 'http', 'verbose', 'silly'] as const;
+export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
 
-export interface LoggerOptions {
-  production: boolean;
-  path: string;
+const logTypes: readonly LoggerLevel[] = ['log', 'info', 'debug', 'warn', 'error'];
+
+const loggerLevelColor: Record<LoggerLevel, string> = {
+  log: '\x1b[37m',
+  info: '\x1b[37m',
+  debug: '\x1b[34m',
+  warn: '\x1b[33m',
+  error: '\x1b[31m',
+};
+
+export interface LoggerFunction {
+  (...args: any[]): void;
 }
 
 export class Logger {
-  constructor(name: string, options: LoggerOptions) {
-    const color = format.colorize({ colors: { service: 'yellow', name: 'magenta' } });
-    const myFormat = format.combine(
-      format.align(),
-      format.colorize(),
-      format.label({ label: name }),
-      format.timestamp({ format: 'DD/MM/YYYY HH:mm:ss' }),
-      format.json(),
-      format.printf(({ level, message, label, timestamp, ...params }) => {
-        const apiTimestampColor = color.colorize('service', `[API] - ${timestamp}`);
-        const labelColor = color.colorize('name', `[${label}]`);
-        return `${apiTimestampColor} \t${level} \t${labelColor} ${message} ${JSON.stringify(params)}`;
-      })
-    );
-    this._logger = createLogger({
-      level: 'info',
-      format: myFormat,
-      transports: [
-        new transports.File({ filename: join(options.path, '/', 'combined.log') }),
-        new transports.File({ filename: join(options.path, '/', 'error.log'), level: 'error' }),
-      ],
-    });
-    if (!options.production) {
-      this._logger.add(
-        new transports.Console({
-          format: myFormat,
-        })
-      );
-    }
-
+  private constructor(private readonly name: string) {
     for (const logType of logTypes) {
-      this[logType] = this._logger[logType].bind(this._logger);
+      this[logType] = (...args: any[]) => this._baseLog(logType, ...args);
     }
   }
 
-  private readonly _logger: WinstonLogger;
+  readonly log!: LoggerFunction;
+  readonly info!: LoggerFunction;
+  readonly debug!: LoggerFunction;
+  readonly warn!: LoggerFunction;
+  readonly error!: LoggerFunction;
 
-  readonly error!: LeveledLogMethod;
-  readonly warn!: LeveledLogMethod;
-  readonly info!: LeveledLogMethod;
-  readonly debug!: LeveledLogMethod;
-  readonly http!: LeveledLogMethod;
-  readonly verbose!: LeveledLogMethod;
-  readonly silly!: LeveledLogMethod;
+  private _baseLog(level: LoggerLevel, ...args: unknown[]): void {
+    const dateString = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+    const resetColor = '\x1b[0m';
+    const name = `\x1b[35m[${this.name}]${resetColor}`;
+    const levelColor = loggerLevelColor[level];
+    const levelFormatted = `${levelColor}${level}${resetColor}`.padEnd(levelColor.length + 10 + resetColor.length);
+    const argsFormatted = args.reduce(
+      (newArgs: unknown[], arg) => (isObject(arg) ? [...newArgs, resetColor, arg, levelColor] : [...newArgs, arg]),
+      []
+    );
+    // eslint-disable-next-line no-console
+    console[level](
+      `\x1b[33m[API] - ${dateString}${resetColor} ${levelFormatted} ${name}${levelColor}`,
+      ...argsFormatted,
+      `${resetColor}`
+    );
+  }
 
-  static create(name: string, options: LoggerOptions): Logger {
-    return new Logger(name, options);
+  static create(name: string): Logger {
+    return new Logger(name);
   }
 }
