@@ -3,7 +3,7 @@ export class EnvPropertyMetadata {
     public readonly propertyKey: string,
     public readonly name: string,
     public readonly required: boolean,
-    public readonly converter?: (value: any) => any
+    public readonly parser?: (value: any) => any
   ) {}
 }
 

@@ -13,8 +13,8 @@ export class BaseEnvironment {
     for (const [, metadata] of entries) {
       let value = process.env[metadata.name];
       if (!metadata.required || isNotNil(value)) {
-        if (metadata.converter) {
-          value = metadata.converter(value);
+        if (metadata.parser) {
+          value = metadata.parser(value);
         }
       } else {
         missingVariables.push(metadata.name);
