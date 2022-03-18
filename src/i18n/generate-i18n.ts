@@ -10,11 +10,11 @@ export async function generateI18n(options: I18nOptions): Promise<void> {
   const fileBuffer = await readFile(join(path, options.filename ?? 'i18n.json'));
   const messagesObject: I18nMessagesObject = JSON.parse(fileBuffer.toString());
   const keys = Object.keys(messagesObject);
-  const typeString = `export enum I18nKey {${keys.map(key => `'${camelcase(key)}'='${key}'`).join(',')}}`;
+  const typeString = `export enum I18nKey {${keys.map(key => `${camelcase(key)}='${key}'`).join(',')}}`;
   await createFile(join(path, 'i18n-key.enum.ts'), typeString);
   const languages = getLanguages(messagesObject);
   const languageTypeString = `export enum I18nLanguage {${languages
-    .map(key => `'${camelcase(key)}'='${key}'`)
+    .map(key => `${camelcase(key)}='${key}'`)
     .join(',')}}`;
   await createFile(join(path, 'i18n-language.enum.ts'), languageTypeString);
   const messagesObjectString = `import { I18nMessagesObject } from './i18n-messages-object';\n\nconst i18nMessages: I18nMessagesObject = ${fileBuffer.toString()};\n\nexport default i18nMessages;`;
