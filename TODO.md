@@ -6,8 +6,9 @@
 - [ ] i18n database support
 - [ ] Improve errorMiddleware
 - [ ] Improve logger with database support
-- [ ] Unit testing (probably jest)
+- [x] Unit testing (probably jest)
 - [ ] Database support (probably MikroORM)
 - [x] HttpClient
 - [x] Refactor ApplicationError
 - [x] Improve Logger to print objects and instances
+- [ ] Improve unit testing coverage
