@@ -10,4 +10,4 @@
 - [ ] Database support (probably MikroORM)
 - [x] HttpClient
 - [x] Refactor ApplicationError
-- [ ] Improve Logger to print objects and instances
+- [x] Improve Logger to print objects and instances
