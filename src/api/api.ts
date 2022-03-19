@@ -38,7 +38,7 @@ export class Api {
       filename: 'i18n.json',
       defaultLanguage: this.options.i18nOptions?.defaultLanguage,
     };
-    this._prefix = this.options.prefix ?? 'api';
+    this._prefix = this.options.prefix ?? '';
     this.name = this.options.name ?? 'API';
     this._app = express()
       .use(express.json())
@@ -130,12 +130,11 @@ export class Api {
     const i18nJsonExists = !!configuration.i18n?.json;
     const i18nJsonHasChanged = configuration.i18n?.json && configuration.i18n.json !== i18nJson;
     if (!i18nJsonExists || i18nJsonHasChanged) {
-      if (!i18nJsonExists) {
-        this._logger.info('Generating i18n files');
-      }
+      let loggingMessage = 'Generating i18n files';
       if (i18nJsonHasChanged) {
-        this._logger.info('i18n file changed. Re-generating i18n files');
+        loggingMessage = 'i18n file changed. Re-generating i18n files';
       }
+      this._logger.info(loggingMessage);
       await this._upsertCachedConfiguration(_configuration => ({ ..._configuration, i18n: { json: i18nJson } }));
       await generateI18n(this._i18nOptions);
     }

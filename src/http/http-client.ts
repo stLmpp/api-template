@@ -45,6 +45,7 @@ export class HttpClient {
       const responseType = this._normalizeContentType(contentType);
       error = await response[responseType]();
     }
+    this._logger.error('Error response', error);
     return new HttpError({ statusCode: response.status, message: response.statusText, error });
   }
 
