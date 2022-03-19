@@ -125,4 +125,4 @@ async function main(): Promise<void> {
   app.getDefaultLogger().info('Info', entries);
 }
 
-main().then().catch(console.error);
+main().then();

@@ -6,22 +6,21 @@ import camelcase from 'camelcase';
 import { applyPrettier } from '../prettier/apply-prettier';
 
 import { I18nMessagesObject } from './i18n-messages-object';
-import { I18nOptions } from './i18n-options';
+import { I18nOptionsInternal } from './i18n-options-internal';
 
-export async function generateI18n(options: I18nOptions): Promise<void> {
-  const path = join(process.cwd(), options.path ?? 'src/i18n');
-  const fileBuffer = await readFile(join(path, options.filename ?? 'i18n.json'));
+export async function generateI18n({ appPath, filename, libPath }: I18nOptionsInternal): Promise<void> {
+  const fileBuffer = await readFile(join(appPath, filename));
   const messagesObject: I18nMessagesObject = JSON.parse(fileBuffer.toString());
   const keys = Object.keys(messagesObject);
   const typeString = `export enum I18nKey {${keys.map(key => `${camelcase(key)}='${key}'`).join(',')}}`;
-  await createFile(join(path, 'i18n-key.enum.ts'), typeString);
+  await createFile(join(libPath, 'i18n-key.enum.ts'), typeString);
   const languages = getLanguages(messagesObject);
   const languageTypeString = `export enum I18nLanguage {${languages
     .map(key => `${camelcase(key)}='${key}'`)
     .join(',')}}`;
-  await createFile(join(path, 'i18n-language.enum.ts'), languageTypeString);
-  const messagesObjectString = `import { I18nMessagesObject } from './i18n-messages-object';\n\nconst i18nMessages: I18nMessagesObject = ${fileBuffer.toString()};\n\nexport default i18nMessages;`;
-  await createFile(join(path, 'i18n-messages.ts'), messagesObjectString);
+  await createFile(join(libPath, 'i18n-language.enum.ts'), languageTypeString);
+  const messagesObjectString = `import { I18nMessagesObject } from './i18n-messages-object';\n\nconst i18nMessages: I18nMessagesObject = ${fileBuffer.toString()};\n\n\nexport default i18nMessages;`;
+  await createFile(join(libPath, 'i18n-messages.ts'), messagesObjectString);
 }
 
 async function createFile(filePath: string, fileContent: string): Promise<void> {

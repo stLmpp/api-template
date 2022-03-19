@@ -28,6 +28,7 @@ export class BaseEnvironment {
   }
 
   @EnvProp() nodeEnv!: string;
+  @EnvProp() stApiEnv!: boolean;
 
   get isDev(): boolean {
     return this.nodeEnv === 'development';

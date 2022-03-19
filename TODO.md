@@ -12,3 +12,5 @@
 - [x] Refactor ApplicationError
 - [x] Improve Logger to print objects and instances
 - [ ] Improve unit testing coverage
+- [ ] Config file
+- [ ] Script to generate i18n files based on Config file
