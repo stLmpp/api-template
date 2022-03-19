@@ -1,4 +1,5 @@
 import { Class } from 'type-fest';
+
 import { ReflectMetadataTypes } from '../utils/reflect';
 
 export class Injector {

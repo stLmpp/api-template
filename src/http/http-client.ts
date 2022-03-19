@@ -1,11 +1,13 @@
-import { Injectable } from '../injector/injectable.decorator';
-import { HttpMethod } from './http-method.enum';
-import { HttpError } from './http-error';
-import { Class } from 'type-fest';
 import { StatusCodes } from 'http-status-codes';
-import { HttpResponse } from './http-response';
-import { ValidationService } from '../validation/validation.service';
+import { Class } from 'type-fest';
+
+import { Injectable } from '../injector/injectable.decorator';
 import { LoggerFactory } from '../logger/logger.factory';
+import { ValidationService } from '../validation/validation.service';
+
+import { HttpError } from './http-error';
+import { HttpMethod } from './http-method.enum';
+import { HttpResponse } from './http-response';
 
 export type ResponseType = 'json' | 'arrayBuffer' | 'text';
 

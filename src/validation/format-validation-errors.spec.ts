@@ -1,4 +1,5 @@
 import { ValidationError } from 'class-validator';
+
 import { formatValidationsErrors } from './format-validation-errors';
 
 describe('format-validation-errors', () => {

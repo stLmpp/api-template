@@ -1,4 +1,5 @@
 import { ErrorRequestHandler } from 'express';
+
 import { BaseError } from './base-error';
 
 export interface ErrorMiddlewareOptions {

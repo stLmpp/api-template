@@ -1,4 +1,5 @@
 import { join } from 'path';
+
 import { pathExists } from './path-exists';
 
 describe('path-exists', () => {

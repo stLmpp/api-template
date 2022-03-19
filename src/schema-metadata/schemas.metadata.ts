@@ -1,5 +1,5 @@
-import { SwaggerSchemaMetadata } from './schema.metadata';
 import { SwaggerSchemaPropertyMetadata } from './schema-property.metadata';
+import { SwaggerSchemaMetadata } from './schema.metadata';
 
 export class SchemasMetadata {
   private readonly _schemas = new Map<any, SwaggerSchemaMetadata>();

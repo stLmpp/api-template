@@ -1,8 +1,11 @@
-import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
-import { I18nMessagesObject } from './i18n-messages-object';
-import { applyPrettier } from '../prettier/apply-prettier';
+import { join } from 'path';
+
 import camelcase from 'camelcase';
+
+import { applyPrettier } from '../prettier/apply-prettier';
+
+import { I18nMessagesObject } from './i18n-messages-object';
 import { I18nOptions } from './i18n-options';
 
 export async function generateI18n(options: I18nOptions): Promise<void> {

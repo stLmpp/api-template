@@ -1,7 +1,7 @@
 import { HttpMethod } from '../../http/http-method.enum';
+import { ReflectMetadataTypes } from '../../utils/reflect';
 import { controllerMetadataStore } from '../controller.metadata';
 import { RouteDecoratorType } from '../route-decorator.type';
-import { ReflectMetadataTypes } from '../../utils/reflect';
 
 export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
   return options => (target, propertyKey) => {

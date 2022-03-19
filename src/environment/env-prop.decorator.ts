@@ -1,7 +1,9 @@
-import { environmentMetadata, EnvPropertyMetadata } from './environment.metadata';
-import { isString } from 'st-utils';
-import { ReflectMetadataTypes } from '../utils/reflect';
 import { snakeCase } from 'snake-case';
+import { isString } from 'st-utils';
+
+import { ReflectMetadataTypes } from '../utils/reflect';
+
+import { environmentMetadata, EnvPropertyMetadata } from './environment.metadata';
 
 export interface EnvPropertyOptions {
   required?: boolean;

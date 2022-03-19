@@ -1,6 +1,8 @@
-import { swaggerSchemasMetadata } from './schemas.metadata';
-import { ReflectMetadataTypes } from '../utils/reflect';
 import { OpenAPIV3 } from 'openapi-types';
+
+import { ReflectMetadataTypes } from '../utils/reflect';
+
+import { swaggerSchemasMetadata } from './schemas.metadata';
 
 export interface ApiPropertyOptions {
   type?: OpenAPIV3.NonArraySchemaObjectType | OpenAPIV3.ArraySchemaObjectType;

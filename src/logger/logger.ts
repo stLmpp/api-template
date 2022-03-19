@@ -1,5 +1,5 @@
-import { isObject } from 'st-utils';
 import { format } from 'date-fns';
+import { isObject } from 'st-utils';
 
 export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
 

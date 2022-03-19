@@ -1,22 +1,25 @@
-import express, { Application } from 'express';
-import { ControllerMetadata, ControllerMetadataStore } from '../controller/controller.metadata';
-import { Injector } from '../injector/injector';
-import { Result } from '../result/result';
-import compression from 'compression';
-import helmet from 'helmet';
-import { errorMiddleware } from '../error/error.middleware';
-import { join } from 'path';
-import { Class } from 'type-fest';
-import { LoggerFactory } from '../logger/logger.factory';
-import { BaseEnvironment } from '../environment/base-environment';
-import { Logger } from '../logger/logger';
-import { I18nOptions } from '../i18n/i18n-options';
-import { i18nMiddleware } from '../i18n/i18n-middleware';
-import { ApiCachedConfiguration } from './api-cached-configuration';
 import { mkdir, readFile, writeFile } from 'fs/promises';
+import { join } from 'path';
+
+import compression from 'compression';
+import express, { Application, json } from 'express';
+import helmet from 'helmet';
+import { Class } from 'type-fest';
+
+import { ControllerMetadata, ControllerMetadataStore } from '../controller/controller.metadata';
+import { BaseEnvironment } from '../environment/base-environment';
+import { errorMiddleware } from '../error/error.middleware';
 import { generateI18n } from '../i18n/generate-i18n';
-import { pathExists } from '../utils/path-exists';
+import { i18nMiddleware } from '../i18n/i18n-middleware';
+import { I18nOptions } from '../i18n/i18n-options';
+import { Injector } from '../injector/injector';
+import { Logger } from '../logger/logger';
+import { LoggerFactory } from '../logger/logger.factory';
 import { applyPrettier } from '../prettier/apply-prettier';
+import { Result } from '../result/result';
+import { pathExists } from '../utils/path-exists';
+
+import { ApiCachedConfiguration } from './api-cached-configuration';
 
 export interface ApiOptions {
   name?: string;
@@ -41,7 +44,7 @@ export class Api {
     this._prefix = this.options.prefix ?? '';
     this.name = this.options.name ?? 'API';
     this._app = express()
-      .use(express.json())
+      .use(json())
       .use(compression())
       .use(helmet())
       .use(i18nMiddleware({ defaultLanguage: this._i18nOptions.defaultLanguage }));

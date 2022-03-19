@@ -1,4 +1,5 @@
 import { ValidationError as ClassValidatorValidationError } from 'class-validator';
+
 import { ValidationError } from './validation-error';
 
 function formatValidationError(message: ClassValidatorValidationError, parent?: string): ValidationError[] {

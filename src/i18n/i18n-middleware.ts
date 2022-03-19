@@ -1,7 +1,8 @@
-import { RequestHandler } from 'express';
-import { I18nLanguage } from './i18n-language.enum';
-import { createI18nContext } from './i18n-async-hook';
 import camelcase from 'camelcase';
+import { RequestHandler } from 'express';
+
+import { createI18nContext } from './i18n-async-hook';
+import { I18nLanguage } from './i18n-language.enum';
 
 export interface I18NMiddlewareOptions {
   defaultLanguage: I18nLanguage | undefined;

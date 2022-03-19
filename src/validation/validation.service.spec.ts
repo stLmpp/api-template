@@ -1,6 +1,8 @@
-import { ValidationService } from './validation.service';
-import { getMockBaseEnvironment } from '../environment/base-environment.mock';
 import { IsDefined, IsString } from 'class-validator';
+
+import { getMockBaseEnvironment } from '../environment/base-environment.mock';
+
+import { ValidationService } from './validation.service';
 
 class User {
   @IsDefined()

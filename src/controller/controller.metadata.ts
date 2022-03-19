@@ -1,6 +1,7 @@
 import { Class } from 'type-fest';
-import { RouteMetadata } from './route.metadata';
+
 import { ParamMetadata } from './param.metadata';
+import { RouteMetadata } from './route.metadata';
 
 export class ControllerMetadata {
   constructor(path?: string) {

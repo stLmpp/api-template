@@ -1,6 +1,8 @@
-import { HttpMethod } from '../http/http-method.enum';
-import { ParamMetadata } from './param.metadata';
 import { StatusCodes } from 'http-status-codes';
+
+import { HttpMethod } from '../http/http-method.enum';
+
+import { ParamMetadata } from './param.metadata';
 
 export class RouteMetadata {
   constructor(method?: HttpMethod, path?: string) {

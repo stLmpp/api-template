@@ -1,5 +1,5 @@
-import { LoggerFactory } from './logger.factory';
 import { Logger } from './logger';
+import { LoggerFactory } from './logger.factory';
 
 describe('LoggerFactory', () => {
   let loggerFactory: LoggerFactory;

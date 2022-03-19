@@ -1,7 +1,8 @@
-import { environmentMetadata } from './environment.metadata';
-import { isNotNil } from 'st-utils';
-import { EnvProp } from './env-prop.decorator';
 import { config } from 'dotenv';
+import { isNotNil } from 'st-utils';
+
+import { EnvProp } from './env-prop.decorator';
+import { environmentMetadata } from './environment.metadata';
 
 export class BaseEnvironment {
   constructor() {
