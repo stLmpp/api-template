@@ -4,5 +4,5 @@ export interface I18nOptionsInternal {
   appPath: string;
   libPath: string;
   filename: string;
-  defaultLanguage: I18nLanguage | undefined;
+  defaultLanguage?: I18nLanguage;
 }

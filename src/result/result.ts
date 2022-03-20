@@ -1,6 +1,6 @@
 export interface IResult<T> {
   data: T | undefined;
-  meta: Record<string, unknown> | undefined;
+  meta?: Record<string, unknown>;
 }
 
 export class Result<T> {
@@ -10,7 +10,7 @@ export class Result<T> {
   }
 
   private _data: T | undefined;
-  private _meta: Record<string, unknown> | undefined;
+  private _meta?: Record<string, unknown>;
 
   setData(data: T): this {
     this._data = data;

@@ -22,7 +22,7 @@ export abstract class BaseError extends Error {
   readonly statusCode: StatusCodes;
   readonly errors: string[];
   readonly code: string | undefined;
-  readonly metadata: Record<string, unknown> | undefined;
+  readonly metadata?: Record<string, unknown>;
 
   toJSON(): Record<string, unknown> {
     const { statusCode, ...error } = this;

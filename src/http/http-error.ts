@@ -1,7 +1,7 @@
 import { BaseError, BaseErrorParams } from '../error/base-error';
 
 export interface HttpErrorParams extends BaseErrorParams {
-  error?: string | Record<string, unknown> | undefined;
+  error?: string | Record<string, unknown>;
 }
 
 export class HttpError extends BaseError {
@@ -11,5 +11,5 @@ export class HttpError extends BaseError {
     this.error = params.error;
   }
 
-  readonly error: string | Record<string, unknown> | undefined;
+  readonly error?: string | Record<string, unknown>;
 }
