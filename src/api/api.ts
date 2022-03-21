@@ -4,15 +4,14 @@ import { join } from 'path';
 import compression from 'compression';
 import express, { Application, json } from 'express';
 import helmet from 'helmet';
-import { Class } from 'type-fest';
 
+import { ApiConfigInternal } from '../config/api-config-internal';
 import { API_CACHE_FILE, API_CACHE_FOLDER } from '../constants/constants';
 import { ControllerMetadata, ControllerMetadataStore } from '../controller/controller.metadata';
 import { BaseEnvironment } from '../environment/base-environment';
 import { errorMiddleware } from '../error/error.middleware';
 import { generateI18n } from '../i18n/generate-i18n';
 import { i18nMiddleware } from '../i18n/i18n-middleware';
-import { I18nOptions } from '../i18n/i18n-options';
 import { I18nOptionsInternal } from '../i18n/i18n-options-internal';
 import { Injector } from '../injector/injector';
 import { Logger } from '../logger/logger';
@@ -23,38 +22,25 @@ import { Result } from '../result/result';
 import { pathExists } from '../utils/path-exists';
 
 import { ApiCachedConfiguration } from './api-cached-configuration';
-
-export interface ApiOptions {
-  name?: string;
-  prefix?: string;
-  port: number;
-  host?: string;
-  controllers: Class<any>[];
-  i18nOptions?: Partial<I18nOptions>;
-}
+import { ApiOptions } from './api-options';
 
 export class Api {
   constructor(
     private readonly injector: Injector,
     private readonly controllerMetadataStore: ControllerMetadataStore,
-    private readonly options: ApiOptions
+    private readonly options: ApiOptions,
+    private readonly config: ApiConfigInternal
   ) {
     this._baseEnvironment = this.injector.get(BaseEnvironment);
     this._pathUtils = this.injector.get(PathUtils);
-    this._i18nOptions = {
-      appPath: this._pathUtils.joinRootApp(this.options.i18nOptions?.path ?? 'src/i18n'),
-      libPath: this._pathUtils.joinRootLib('src/i18n'),
-      filename: this.options.i18nOptions?.filename ?? 'i18n.json',
-      defaultLanguage: this.options.i18nOptions?.defaultLanguage,
-    };
-    this._prefix = this.options.prefix ?? '';
-    this.name = this.options.name ?? 'API';
+    this._i18nOptions = this.config.i18nOptions;
+    this._prefix = this.config.prefix ?? '';
+    this.name = this.config.name ?? 'API';
     this._app = express()
       .use(json())
       .use(compression())
       .use(helmet())
       .use(i18nMiddleware({ defaultLanguage: this._i18nOptions.defaultLanguage }));
-    this._loadConfig();
     this._logger = this.injector.get(LoggerFactory).create('Api');
   }
 
@@ -95,11 +81,6 @@ export class Api {
       const instance = this.injector.get(controller);
       this._loadController(instance, metadata);
     }
-    return this;
-  }
-
-  private _loadConfig(): this {
-    this.injector.set(LoggerFactory, new LoggerFactory());
     return this;
   }
 
@@ -163,9 +144,9 @@ export class Api {
   }
 
   async listen(): Promise<this> {
-    const host = this.options.host ?? '127.0.0.1';
-    await this._app.listen(this.options.port, host);
-    this._logger.info(`Listening on ${host}:${this.options.port}`);
+    const host = this.config.host ?? '127.0.0.1';
+    await this._app.listen(this.config.port, host);
+    this._logger.info(`Listening on ${host}:${this.config.port}`);
     return this;
   }
 }

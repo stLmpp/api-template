@@ -119,7 +119,7 @@ export class AppController {
 }
 
 async function main(): Promise<void> {
-  const app = await ApiFactory.create({ port: 3000, controllers: [AppController] });
+  const app = await ApiFactory.create({ controllers: [AppController] });
   await app.listen();
   const entries = controllerMetadataStore.entries();
   app.getDefaultLogger().info('Info', entries);
