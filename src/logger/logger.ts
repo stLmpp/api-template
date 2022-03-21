@@ -18,7 +18,7 @@ export interface LoggerFunction {
 }
 
 export class Logger {
-  private constructor(private readonly name: string) {
+  private constructor(public readonly name: string) {
     for (const logType of logTypes) {
       this[logType] = (...args: any[]) => this._baseLog(logType, ...args);
     }
