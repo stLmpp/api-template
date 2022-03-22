@@ -1,7 +1,5 @@
 import { IsDefined, IsString } from 'class-validator';
 
-import { getMockBaseEnvironment } from '../environment/base-environment.mock';
-
 import { ValidationService } from './validation.service';
 
 class User {
@@ -12,10 +10,9 @@ class User {
 
 describe('ValidationService', () => {
   let validationService: ValidationService;
-  const mockBaseEnvironment = getMockBaseEnvironment();
 
   beforeEach(() => {
-    validationService = new ValidationService(mockBaseEnvironment);
+    validationService = new ValidationService();
   });
 
   it('should create instance', () => {

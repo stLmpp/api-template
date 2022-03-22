@@ -1,9 +1,23 @@
 import { config } from 'dotenv';
-import { isNotNil } from 'st-utils';
+import { isNotNil, isString } from 'st-utils';
+
+import { Injectable } from '../injector/injectable.decorator';
+import { LoggerLevel } from '../logger/logger-level';
 
 import { EnvProp } from './env-prop.decorator';
 import { environmentMetadata } from './environment.metadata';
 
+function loggerLevelParser(value: LoggerLevel): LoggerLevel {
+  if (!isString(value)) {
+    return LoggerLevel.info;
+  }
+  if (!LoggerLevel[value]) {
+    return LoggerLevel.info;
+  }
+  return value;
+}
+
+@Injectable()
 export class BaseEnvironment {
   constructor() {
     if (process.env.NODE_ENV !== 'production') {
@@ -27,8 +41,9 @@ export class BaseEnvironment {
     }
   }
 
-  @EnvProp() nodeEnv!: string;
-  @EnvProp() stApiEnv!: boolean;
+  @EnvProp() readonly nodeEnv!: string;
+  @EnvProp() readonly stApiEnv!: boolean;
+  @EnvProp({ parser: loggerLevelParser }) readonly loggerLevel!: LoggerLevel;
 
   get isDev(): boolean {
     return this.nodeEnv === 'development';

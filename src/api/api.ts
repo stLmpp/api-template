@@ -56,7 +56,8 @@ export class Api {
 
   private _loadController(instance: any, metadata: ControllerMetadata): this {
     for (const [key, route] of metadata.routes) {
-      const routePath = join('/', this._prefix, '/', metadata.path, '/', route.path);
+      const routePath = this._pathUtils.normalizeEndPoint('/', this._prefix, '/', metadata.path, '/', route.path);
+      this._logger.debug('Loading path: ', routePath);
       this._app[route.method](routePath, async (req, res, next) => {
         try {
           const result = await instance[key](...route.params.map(paramMetadata => paramMetadata.parser(req)));

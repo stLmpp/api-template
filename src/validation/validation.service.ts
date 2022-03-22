@@ -3,7 +3,6 @@ import { validate } from 'class-validator';
 import { coerceArray, isArray } from 'st-utils';
 import { Class } from 'type-fest';
 
-import { BaseEnvironment } from '../environment/base-environment';
 import { Injectable } from '../injector/injectable.decorator';
 
 import { formatValidationsErrors } from './format-validation-errors';
@@ -11,18 +10,14 @@ import { ValidationError } from './validation-error';
 
 @Injectable()
 export class ValidationService {
-  constructor(private baseEnvironment: BaseEnvironment) {}
-
   private async _validate<T extends Record<any, any>>(objectOrArray: T | T[]): Promise<ValidationError[]> {
-    const isDev = this.baseEnvironment.isDev;
     const array = coerceArray(objectOrArray);
     const errorsNested = await Promise.all(
       array.map(object =>
         validate(object, {
-          enableDebugMessages: isDev,
           forbidUnknownValues: true,
           whitelist: true,
-          validationError: { target: isDev },
+          validationError: { target: false },
         })
       )
     );

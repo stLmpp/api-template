@@ -1,4 +1,5 @@
 import { Logger } from './logger';
+import { LoggerLevel } from './logger-level';
 
 describe('Logger', () => {
   let logger: Logger;
@@ -17,7 +18,7 @@ describe('Logger', () => {
   ] as const;
 
   beforeEach(() => {
-    logger = Logger.create('test');
+    logger = Logger.create('test', LoggerLevel.debug);
   });
 
   it('should log', () => {

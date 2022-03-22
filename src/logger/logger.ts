@@ -1,9 +1,16 @@
 import { format } from 'date-fns';
 import { isObject } from 'st-utils';
 
-export type LoggerLevel = 'log' | 'info' | 'debug' | 'warn' | 'error';
+import { LoggerFunction } from './logger-function';
+import { LoggerLevel } from './logger-level';
 
-const logTypes: readonly LoggerLevel[] = ['log', 'info', 'debug', 'warn', 'error'];
+const logTypes: readonly LoggerLevel[] = [
+  LoggerLevel.debug,
+  LoggerLevel.log,
+  LoggerLevel.info,
+  LoggerLevel.warn,
+  LoggerLevel.error,
+];
 
 const loggerLevelColor: Record<LoggerLevel, string> = {
   log: '\x1b[37m',
@@ -13,12 +20,16 @@ const loggerLevelColor: Record<LoggerLevel, string> = {
   error: '\x1b[31m',
 };
 
-export interface LoggerFunction {
-  (...args: any[]): void;
-}
+const loggerLevelMap: Record<LoggerLevel, number> = {
+  [LoggerLevel.debug]: 4,
+  [LoggerLevel.log]: 3,
+  [LoggerLevel.info]: 2,
+  [LoggerLevel.warn]: 1,
+  [LoggerLevel.error]: 0,
+};
 
 export class Logger {
-  private constructor(public readonly name: string) {
+  private constructor(public readonly name: string, public readonly loggerLevel: LoggerLevel) {
     for (const logType of logTypes) {
       this[logType] = (...args: any[]) => this._baseLog(logType, ...args);
     }
@@ -30,7 +41,16 @@ export class Logger {
   readonly warn!: LoggerFunction;
   readonly error!: LoggerFunction;
 
+  private _showLog(level: LoggerLevel): boolean {
+    const maxLevel = loggerLevelMap[this.loggerLevel];
+    const levelNumber = loggerLevelMap[level];
+    return levelNumber <= maxLevel;
+  }
+
   private _baseLog(level: LoggerLevel, ...args: unknown[]): void {
+    if (!this._showLog(level)) {
+      return;
+    }
     const dateString = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
     const resetColor = '\x1b[0m';
     const name = `\x1b[35m[${this.name}]${resetColor}`;
@@ -48,7 +68,7 @@ export class Logger {
     );
   }
 
-  static create(name: string): Logger {
-    return new Logger(name);
+  static create(name: string, loggerLevel: LoggerLevel): Logger {
+    return new Logger(name, loggerLevel);
   }
 }

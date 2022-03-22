@@ -1,13 +1,18 @@
+import { getMockBaseEnvironment } from '../environment/base-environment.mock';
+
 import { Logger } from './logger';
+import { LoggerLevel } from './logger-level';
 import { LoggerFactory } from './logger.factory';
 
 class Service {}
 
 describe('LoggerFactory', () => {
   let loggerFactory: LoggerFactory;
+  const mockBaseEnvironment = getMockBaseEnvironment();
 
   beforeEach(() => {
-    loggerFactory = new LoggerFactory();
+    loggerFactory = new LoggerFactory(mockBaseEnvironment);
+    jest.spyOn(mockBaseEnvironment, 'loggerLevel', 'get').mockReturnValue(LoggerLevel.debug);
   });
 
   it('should create logger', () => {

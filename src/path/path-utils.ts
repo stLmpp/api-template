@@ -26,4 +26,8 @@ export class PathUtils {
     }
     return join(process.cwd(), 'node_modules', LIB_NAME);
   }
+
+  normalizeEndPoint(...args: string[]): string {
+    return join(...args).replace('\\', '/');
+  }
 }

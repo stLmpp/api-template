@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "ts-node scripts/before-start.ts && nodemon",
     "build": "tsc",
     "test": "jest",
     "i18n": "ts-node scripts/generate-i18n.ts"
