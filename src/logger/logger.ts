@@ -35,9 +35,9 @@ export class Logger {
     }
   }
 
-  readonly log!: LoggerFunction;
-  readonly info!: LoggerFunction;
   readonly debug!: LoggerFunction;
+  readonly info!: LoggerFunction;
+  readonly log!: LoggerFunction;
   readonly warn!: LoggerFunction;
   readonly error!: LoggerFunction;
 
