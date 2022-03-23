@@ -10,7 +10,6 @@ export class RouteMetadata {
     this.method = method ?? HttpMethod.GET;
     this.params = [];
     this.httpCode = StatusCodes.OK;
-    this.responseArray = false;
   }
 
   path: string;
@@ -18,5 +17,5 @@ export class RouteMetadata {
   method: HttpMethod;
   params: ParamMetadata[];
   responseType?: any;
-  responseArray: boolean;
+  bodyType?: any;
 }

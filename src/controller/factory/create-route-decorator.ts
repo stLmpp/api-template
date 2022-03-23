@@ -1,7 +1,6 @@
 import { HttpMethod } from '../../http/http-method.enum';
 import { controllerMetadataStore } from '../controller.metadata';
 import { RouteDecoratorType } from '../route-decorator.type';
-import { isNotNil } from 'st-utils';
 
 export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
   return options => (target, propertyKey) => {
@@ -15,8 +14,8 @@ export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
       if (options?.responseType) {
         metadata.responseType = options.responseType;
       }
-      if (options && isNotNil(options.responseArray)) {
-        metadata.responseArray = options.responseArray;
+      if (options?.bodyType) {
+        metadata.bodyType = options.bodyType;
       }
       metadata.method = method;
       return metadata;

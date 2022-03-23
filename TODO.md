@@ -1,11 +1,11 @@
 - [ ] Swagger
-- [ ] Swagger validation
+- [ ] Swagger validation (depends on swagger)
 - [ ] Body and Params validation
 - [ ] Mapper
 - [x] i18n
-- [ ] i18n database support
+- [ ] i18n database support (depends on Database support)
 - [ ] Improve errorMiddleware
-- [ ] Improve logger with database support
+- [ ] Improve logger with database support (depends on database support)
 - [x] Unit testing (probably jest)
 - [ ] Database support (probably MikroORM)
 - [x] HttpClient

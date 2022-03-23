@@ -25,6 +25,10 @@ export class SchemasMetadata {
   entries(): [any, SwaggerSchemaMetadata][] {
     return [...this._schemas.entries()];
   }
+
+  get(target: any): SwaggerSchemaMetadata | undefined {
+    return this._schemas.get(target);
+  }
 }
 
 export const swaggerSchemasMetadata = new SchemasMetadata();

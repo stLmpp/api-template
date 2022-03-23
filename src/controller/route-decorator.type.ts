@@ -4,7 +4,7 @@ export interface RouteDecoratorOptions {
   path?: string;
   httpCode?: StatusCodes;
   responseType?: any;
-  responseArray?: boolean;
+  bodyType?: any;
 }
 
 export interface RouteDecoratorType {

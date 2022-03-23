@@ -57,7 +57,7 @@ export class Api {
   private _loadController(instance: any, metadata: ControllerMetadata): this {
     for (const [key, route] of metadata.routes) {
       const routePath = this._pathUtils.normalizeEndPoint('/', this._prefix, '/', metadata.path, '/', route.path);
-      this._logger.debug('Loading path: ', routePath);
+      this._logger.debug(`Loading path: (${route.method.toUpperCase()})`, routePath);
       this._app[route.method](routePath, async (req, res, next) => {
         try {
           const result = await instance[key](...route.params.map(paramMetadata => paramMetadata.parser(req)));
@@ -78,9 +78,10 @@ export class Api {
   private _loadControllers(): this {
     const entries = this.controllerMetadataStore.entries();
     for (const [controller, metadata] of entries) {
-      this._logger.info(`${controller.name} loaded`);
+      this._logger.debug(`Loading ${controller.name}`);
       const instance = this.injector.get(controller);
       this._loadController(instance, metadata);
+      this._logger.info(`${controller.name} loaded`);
     }
     return this;
   }
