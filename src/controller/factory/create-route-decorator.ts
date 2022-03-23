@@ -1,7 +1,7 @@
 import { HttpMethod } from '../../http/http-method.enum';
-import { ReflectMetadataTypes } from '../../utils/reflect';
 import { controllerMetadataStore } from '../controller.metadata';
 import { RouteDecoratorType } from '../route-decorator.type';
+import { isNotNil } from 'st-utils';
 
 export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
   return options => (target, propertyKey) => {
@@ -12,11 +12,13 @@ export function createRouteDecorator(method: HttpMethod): RouteDecoratorType {
       if (options?.httpCode) {
         metadata.httpCode = options.httpCode;
       }
-      metadata.method = method;
-      const returnType = Reflect.getMetadata(ReflectMetadataTypes.returnType, target, propertyKey);
-      if (returnType) {
-        metadata.returnType = returnType;
+      if (options?.responseType) {
+        metadata.responseType = options.responseType;
       }
+      if (options && isNotNil(options.responseArray)) {
+        metadata.responseArray = options.responseArray;
+      }
+      metadata.method = method;
       return metadata;
     });
   };

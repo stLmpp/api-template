@@ -112,7 +112,7 @@ export class HelloUseCase extends BaseUseCase<Model, Model> {
 export class AppController {
   constructor(private helloUseCase: HelloUseCase) {}
 
-  @Get({ path: '/:id', httpCode: StatusCodes.ACCEPTED })
+  @Get({ path: '/:id', httpCode: StatusCodes.ACCEPTED, responseType: Model })
   async get(@Param('id') id: number, @Query('teste') teste: any): Promise<Result<Model>> {
     return this.helloUseCase.execute({ id, teste });
   }

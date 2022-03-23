@@ -10,11 +10,13 @@ export class RouteMetadata {
     this.method = method ?? HttpMethod.GET;
     this.params = [];
     this.httpCode = StatusCodes.OK;
+    this.responseArray = false;
   }
 
   path: string;
   httpCode: StatusCodes;
   method: HttpMethod;
   params: ParamMetadata[];
-  returnType: any;
+  responseType?: any;
+  responseArray: boolean;
 }
