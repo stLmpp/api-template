@@ -23,8 +23,8 @@ import { BaseUseCase } from './use-case/base-use-case';
 import { UseCase } from './use-case/use-case.decorator';
 
 export class Model {
-  @Property({ minimum: 1, maximum: 999_999_999_999 }) id!: number;
-  @Property({ type: 'object' }) teste!: object;
+  @Property({ minimum: 1, maximum: 999_999_999_999, example: 2090 }) id!: number;
+  @Property({ type: 'object', example: { id: 1, array: [1, 2, 3] }, description: 'An object' }) teste!: object;
 }
 
 @Env()

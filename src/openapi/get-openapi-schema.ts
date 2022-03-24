@@ -1,4 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
+import { isString } from 'st-utils';
 
 import { swaggerSchemasMetadata } from '../schema-metadata/schemas.metadata';
 
@@ -10,6 +11,9 @@ export function getOpenapiSchema(type: any): OpenAPIV3.SchemaObject {
   if (cachedSchemas.has(type)) {
     return cachedSchemas.get(type)!;
   }
+  if (isString(type)) {
+    return { type: type as any };
+  }
   const [isPrimitive, primitiveType] = getOpenapiPrimitiveType(type);
   if (isPrimitive) {
     return { type: primitiveType };
@@ -19,12 +23,16 @@ export function getOpenapiSchema(type: any): OpenAPIV3.SchemaObject {
   if (metadata) {
     const properties: Record<string, OpenAPIV3.SchemaObject> = {};
     for (const [propertyKey, propertyMetadata] of metadata.properties) {
-      properties[propertyKey] = getOpenapiSchema(propertyMetadata.type);
-      properties[propertyKey].maximum = propertyMetadata.maximum;
-      properties[propertyKey].minimum = propertyMetadata.minimum;
-      properties[propertyKey].maxLength = propertyMetadata.maxLength;
-      properties[propertyKey].minLength = propertyMetadata.minLength;
-      properties[propertyKey].pattern = propertyMetadata.pattern;
+      properties[propertyKey] = {
+        ...getOpenapiSchema(propertyMetadata.type),
+        maximum: propertyMetadata.maximum,
+        minimum: propertyMetadata.minimum,
+        maxLength: propertyMetadata.maxLength,
+        minLength: propertyMetadata.minLength,
+        pattern: propertyMetadata.pattern,
+        example: propertyMetadata.example,
+        description: propertyMetadata.description,
+      };
       if (propertyMetadata.required) {
         schema.required!.push(propertyKey);
       }

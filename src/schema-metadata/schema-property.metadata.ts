@@ -8,4 +8,6 @@ export class SwaggerSchemaPropertyMetadata {
   maxLength?: number;
   minLength?: number;
   pattern?: string;
+  example?: any;
+  description?: string;
 }

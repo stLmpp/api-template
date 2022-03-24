@@ -12,6 +12,8 @@ export interface ApiPropertyOptions {
   maxLength?: number;
   minLength?: number;
   pattern?: string;
+  example?: any;
+  description?: string;
 }
 
 export function Property(options?: ApiPropertyOptions): PropertyDecorator {
@@ -25,6 +27,8 @@ export function Property(options?: ApiPropertyOptions): PropertyDecorator {
       metadata.maxLength = options?.maxLength;
       metadata.minLength = options?.minLength;
       metadata.pattern = options?.pattern;
+      metadata.example = options?.example;
+      metadata.description = options?.description;
       return metadata;
     });
   };

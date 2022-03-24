@@ -27,16 +27,18 @@ export function getOpenapiEndPointSchema(type: any, method: string): OpenAPIV3.P
   if (!routeMetadata) {
     return undefined;
   }
+  const parameters: OpenAPIV3.ParameterObject[] = routeMetadata.params
+    .filter(assertName)
+    .filter(({ parameterType }) => parameterType === 'params' || parameterType === 'query')
+    .map(param => ({
+      in: fromParameterTypeToParameterIn[param.parameterType],
+      name: param.name,
+      schema: getOpenapiSchema(param.type),
+      required: param.parameterType === 'params', // TODO add required to param options/metadata
+    }));
   const operationObject: OpenAPIV3.OperationObject = {
+    parameters,
     tags: [type.name],
-    parameters: routeMetadata.params
-      .filter(assertName)
-      .filter(({ parameterType }) => parameterType === 'params' || parameterType === 'query')
-      .map(param => ({
-        in: fromParameterTypeToParameterIn[param.parameterType],
-        name: param.name,
-        schema: getOpenapiSchema(param.type),
-      })),
     responses: {
       [routeMetadata.httpCode]: {
         description: 'OK',
