@@ -4,6 +4,7 @@ import { join } from 'path';
 import compression from 'compression';
 import express, { Application, json } from 'express';
 import helmet from 'helmet';
+import { serve, setup } from 'swagger-ui-express';
 
 import { ApiConfigInternal } from '../config/api-config-internal';
 import { API_CACHE_FILE, API_CACHE_FOLDER } from '../constants/constants';
@@ -16,6 +17,7 @@ import { I18nOptionsInternal } from '../i18n/i18n-options-internal';
 import { Injector } from '../injector/injector';
 import { Logger } from '../logger/logger';
 import { LoggerFactory } from '../logger/logger.factory';
+import { getOpenapiDocument } from '../openapi/get-openapi-document';
 import { PathUtils } from '../path/path-utils';
 import { applyPrettier } from '../prettier/apply-prettier';
 import { Result } from '../result/result';
@@ -36,10 +38,12 @@ export class Api {
     this._i18nOptions = this.config.i18nOptions;
     this._prefix = this.config.prefix ?? '';
     this.name = this.config.name ?? 'API';
+    const openapi = setup(getOpenapiDocument());
     this._app = express()
       .use(json())
       .use(compression())
       .use(helmet())
+      .use('/help', serve, openapi)
       .use(i18nMiddleware({ defaultLanguage: this._i18nOptions.defaultLanguage }));
     this._logger = this.injector.get(LoggerFactory).create('Api');
   }

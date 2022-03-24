@@ -2,7 +2,6 @@ import { IsDefined, IsNumber, IsString } from 'class-validator';
 import { StatusCodes } from 'http-status-codes';
 
 import { ApiFactory } from './api/api-factory';
-import { controllerMetadataStore } from './controller/controller.metadata';
 import { Body } from './controller/decorator/body.decorator';
 import { Controller } from './controller/decorator/controller.decorator';
 import { Get } from './controller/decorator/get.decorator';
@@ -17,14 +16,14 @@ import { HttpClient } from './http/http-client';
 import { I18nKey } from './i18n/i18n-key.enum';
 import { I18nService } from './i18n/i18n.service';
 import { Injectable } from './injector/injectable.decorator';
-import { getOpenapiSchema } from './openapi/get-openapi-schema';
+import { getOpenapiDocument } from './openapi/get-openapi-document';
 import { Result } from './result/result';
 import { Property } from './schema-metadata/property.decorator';
 import { BaseUseCase } from './use-case/base-use-case';
 import { UseCase } from './use-case/use-case.decorator';
 
 export class Model {
-  @Property() id!: number;
+  @Property({ minimum: 1, maximum: 999_999_999_999 }) id!: number;
   @Property({ type: 'object' }) teste!: object;
 }
 
@@ -130,11 +129,7 @@ export class AppController {
 async function main(): Promise<void> {
   const app = await ApiFactory.create({ controllers: [AppController] });
   await app.listen();
-  const entries = controllerMetadataStore.entries();
-  app.getDefaultLogger().info('Info', entries[0][1].routes);
-  console.log(getOpenapiSchema(Model));
-  console.log(getOpenapiSchema(CepModel));
-  console.log(getOpenapiSchema(Number));
+  console.log(JSON.stringify(getOpenapiDocument()));
 }
 
 main().then();

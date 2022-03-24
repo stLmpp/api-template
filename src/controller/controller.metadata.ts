@@ -46,6 +46,10 @@ export class ControllerMetadataStore {
   entries(): [Class<any>, ControllerMetadata][] {
     return [...this._metadata.entries()];
   }
+
+  get(target: any): ControllerMetadata | undefined {
+    return this._metadata.get(target);
+  }
 }
 
 export const controllerMetadataStore = new ControllerMetadataStore();

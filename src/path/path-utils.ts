@@ -28,6 +28,10 @@ export class PathUtils {
   }
 
   normalizeEndPoint(...args: string[]): string {
-    return join(...args).replace('\\', '/');
+    return PathUtils.normalizeEndPoint(...args);
+  }
+
+  static normalizeEndPoint(...args: string[]): string {
+    return join(...args).replace(/\\/g, '/');
   }
 }
