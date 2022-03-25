@@ -1,4 +1,4 @@
-import { IsDefined, IsNumber, IsString } from 'class-validator';
+import { IsDefined, IsNumber, IsString, getMetadataStorage, getFromContainer, MetadataStorage } from 'class-validator';
 import { StatusCodes } from 'http-status-codes';
 
 import { ApiFactory } from './api/api-factory';

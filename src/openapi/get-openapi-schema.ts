@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { isString } from 'st-utils';
+import { isFunction, isString } from 'st-utils';
 
 import { swaggerSchemasMetadata } from '../schema-metadata/schemas.metadata';
 
@@ -23,8 +23,9 @@ export function getOpenapiSchema(type: any): OpenAPIV3.SchemaObject {
   if (metadata) {
     const properties: Record<string, OpenAPIV3.SchemaObject> = {};
     for (const [propertyKey, propertyMetadata] of metadata.properties) {
+      const propertyType = isFunction(propertyMetadata.type) ? propertyMetadata.type() : propertyMetadata.type;
       properties[propertyKey] = {
-        ...getOpenapiSchema(propertyMetadata.type),
+        ...getOpenapiSchema(propertyType),
         maximum: propertyMetadata.maximum,
         minimum: propertyMetadata.minimum,
         maxLength: propertyMetadata.maxLength,
